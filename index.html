@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mat Room — Attendance & Weigh-In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --singlet: #b3122b; --singlet-deep: #7d0c1e; --mat: #16202b; --mat-line: #2a3a49;
+    --canvas: #f5f2ec; --card: #ffffff; --ink: #14181d; --ink-soft: #5a6572; --line: #e2ddd3;
+    --whistle: #e8a72e; --present: #2f9e6b; --absent: #c0392b; --excused: #d98c1f;
+    --shadow: 0 1px 3px rgba(20,24,29,.08), 0 1px 2px rgba(20,24,29,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #10161d; --card: #1a232d; --ink: #eef1f4; --ink-soft: #93a1b0;
+      --line: #2a3744; --mat: #0b1219; --mat-line: #24323f; --shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #10161d; --card: #1a232d; --ink: #eef1f4; --ink-soft: #93a1b0;
+    --line: #2a3744; --mat: #0b1219; --mat-line: #24323f; --shadow: 0 1px 3px rgba(0,0,0,.4);
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--canvas); color:var(--ink); font-family:'Inter',system-ui,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
+  header { background:var(--mat); color:#f5f2ec; border-bottom:3px solid var(--singlet); }
+  .header-inner { max-width:1080px; margin:0 auto; padding:22px 20px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:14px; }
+  .mark { width:44px; height:44px; flex:none; border-radius:8px; background:var(--singlet); display:grid; place-items:center; box-shadow:inset 0 0 0 2px rgba(255,255,255,.12); }
+  .mark svg { width:26px; height:26px; }
+  h1 { font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:.5px; font-size:25px; margin:0; line-height:1; }
+  .sub { font-size:12.5px; color:#9fb0c0; margin-top:3px; }
+  .header-right { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .auth-box { display:flex; align-items:center; gap:10px; font-size:12.5px; color:#9fb0c0; }
+  .auth-box .who { color:#f5f2ec; font-weight:500; }
+  .auth-btn { background:rgba(255,255,255,.08); color:#f5f2ec; border:none; height:34px; padding:0 13px; border-radius:7px; cursor:pointer; font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.4px; text-transform:uppercase; transition:background .12s; }
+  .auth-btn:hover { background:rgba(255,255,255,.18); }
+  .date-nav { display:flex; align-items:center; gap:4px; }
+  .date-nav button { background:rgba(255,255,255,.08); color:#f5f2ec; border:none; width:34px; height:38px; border-radius:7px; cursor:pointer; font-size:18px; display:grid; place-items:center; transition:background .12s; }
+  .date-nav button:hover { background:rgba(255,255,255,.18); }
+  .date-nav input { background:rgba(255,255,255,.08); color:#f5f2ec; border:none; height:38px; border-radius:7px; padding:0 10px; font-family:'Oswald',sans-serif; font-size:15px; letter-spacing:.3px; color-scheme:dark; }
+  .date-nav .today-btn { width:auto; padding:0 12px; font-family:'Oswald',sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:.5px; }
+  .tabs { display:flex; gap:6px; margin:24px 0 18px; }
+  .tab { background:transparent; border:1px solid var(--line); color:var(--ink-soft); padding:8px 16px; border-radius:8px; cursor:pointer; font-family:'Oswald',sans-serif; font-size:13.5px; letter-spacing:.5px; text-transform:uppercase; transition:all .12s; }
+  .tab:hover { border-color:var(--ink-soft); }
+  .tab.active { background:var(--mat); color:#f5f2ec; border-color:var(--mat); }
+  .viewbadge { margin-left:auto; align-self:center; font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .viewbadge .lockico { width:13px; height:13px; }
+  .scoreboard { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:0 0 22px; }
+  .score { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow); }
+  .score .n { font-family:'Oswald',sans-serif; font-size:30px; font-weight:600; line-height:1; }
+  .score .l { font-size:11.5px; color:var(--ink-soft); margin-top:5px; text-transform:uppercase; letter-spacing:.6px; }
+  .score.present .n { color:var(--present); } .score.absent .n { color:var(--absent); } .score.excused .n { color:var(--excused); }
+  .toolbar { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:12px; flex-wrap:wrap; }
+  .toolbar h2 { font-family:'Oswald',sans-serif; font-size:19px; font-weight:600; margin:0; letter-spacing:.4px; }
+  .toolbar .hint { font-size:12.5px; color:var(--ink-soft); }
+  .btn-row { display:flex; gap:8px; }
+  .add-btn, .ghost-btn { border-radius:8px; padding:9px 15px; font-family:'Oswald',sans-serif; font-size:13.5px; font-weight:500; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:background .12s,border-color .12s; }
+  .add-btn { background:var(--singlet); color:#fff; border:none; }
+  .add-btn:hover { background:var(--singlet-deep); }
+  .add-btn:disabled { background:var(--line); color:var(--ink-soft); cursor:not-allowed; }
+  .ghost-btn { background:transparent; border:1px solid var(--line); color:var(--ink); }
+  .ghost-btn:hover { border-color:var(--ink-soft); }
+  .roster { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .row { display:grid; grid-template-columns:1fr 190px 165px 34px; align-items:center; gap:14px; padding:11px 16px; border-bottom:1px solid var(--line); }
+  .row:last-child { border-bottom:none; }
+  .row.head { background:color-mix(in srgb,var(--mat) 5%,var(--card)); font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft); padding-top:9px; padding-bottom:9px; font-weight:600; }
+  .wrestler { display:flex; align-items:center; gap:11px; min-width:0; }
+  .avatar { width:32px; height:32px; flex:none; border-radius:50%; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:600; font-size:13px; color:#fff; letter-spacing:.3px; }
+  .wname { font-weight:600; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wclass { font-size:11.5px; color:var(--ink-soft); }
+  .status-group { display:flex; gap:5px; }
+  .status-group button { flex:1; border:1px solid var(--line); background:transparent; color:var(--ink-soft); padding:6px 0; border-radius:7px; cursor:pointer; font-size:12px; font-weight:600; font-family:'Oswald',sans-serif; letter-spacing:.4px; transition:all .1s; }
+  .status-group button:hover { border-color:var(--ink-soft); }
+  .status-group button[data-on="present"] { background:var(--present); border-color:var(--present); color:#fff; }
+  .status-group button[data-on="absent"] { background:var(--absent); border-color:var(--absent); color:#fff; }
+  .status-group button[data-on="excused"] { background:var(--excused); border-color:var(--excused); color:#fff; }
+  .status-group button:disabled { cursor:default; opacity:.9; }
+  .status-group.ro button:not([data-on]) { opacity:.35; }
+  .weigh-cell { display:flex; flex-direction:column; align-items:stretch; }
+  .weigh { display:flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:7px; padding:4px 9px; background:transparent; transition:opacity .15s,border-color .12s; }
+  .weigh:focus-within { border-color:var(--singlet); }
+  .weigh input { width:100%; border:none; background:transparent; color:var(--ink); font-size:14px; font-family:'Oswald',sans-serif; font-weight:500; text-align:right; outline:none; -moz-appearance:textfield; }
+  .weigh input::-webkit-outer-spin-button, .weigh input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .weigh input:disabled { color:var(--ink); }
+  .weigh .u { font-size:11.5px; color:var(--ink-soft); flex:none; }
+  .weigh.locked { opacity:.4; }
+  .weigh.locked input { pointer-events:none; }
+  .delta { font-size:11px; font-family:'Oswald',sans-serif; margin-top:3px; text-align:right; height:14px; color:var(--ink-soft); letter-spacing:.3px; }
+  .delta.up { color:var(--absent); } .delta.down { color:var(--present); }
+  .del { background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:16px; opacity:.4; transition:opacity .1s,color .1s; border-radius:6px; height:30px; }
+  .del:hover { opacity:1; color:var(--absent); }
+  .del.hidden { display:none; }
+  .empty { padding:46px 20px; text-align:center; color:var(--ink-soft); }
+  .empty svg { width:38px; height:38px; opacity:.35; margin-bottom:10px; }
+  .empty p { margin:0 0 4px; font-size:14px; }
+  .week-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:12px; flex-wrap:wrap; }
+  .week-nav .rangelabel { font-family:'Oswald',sans-serif; font-size:16px; letter-spacing:.4px; }
+  .week-table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .week-table th, .week-table td { padding:10px 12px; text-align:center; font-size:13px; border-bottom:1px solid var(--line); }
+  .week-table th { background:color-mix(in srgb,var(--mat) 5%,var(--card)); font-family:'Oswald',sans-serif; font-weight:500; letter-spacing:.4px; text-transform:uppercase; font-size:11px; color:var(--ink-soft); }
+  .week-table td.name { text-align:left; font-weight:600; }
+  .week-table td.name .sub2 { font-weight:400; font-size:11px; color:var(--ink-soft); }
+  .week-table tr:last-child td { border-bottom:none; }
+  .cell-p { color:var(--present); font-weight:600; } .cell-a { color:var(--absent); font-weight:600; } .cell-e { color:var(--excused); font-weight:600; } .cell-x { color:var(--ink-soft); opacity:.5; }
+  .cell-w { font-family:'Oswald',sans-serif; font-size:12px; }
+  .rate { font-family:'Oswald',sans-serif; font-weight:600; }
+  .week-table .totcol { background:color-mix(in srgb,var(--mat) 4%,var(--card)); }
+  .foot { margin-top:22px; font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:8px; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--present); flex:none; }
+  .dot.off { background:var(--absent); } .dot.warn { background:var(--whistle); }
+  .scrim { position:fixed; inset:0; background:rgba(10,15,20,.55); display:none; place-items:center; padding:20px; z-index:50; }
+  .scrim.open { display:grid; }
+  .modal { background:var(--card); border-radius:14px; width:100%; max-width:380px; padding:24px; box-shadow:0 18px 50px rgba(0,0,0,.3); }
+  .modal h3 { font-family:'Oswald',sans-serif; font-size:19px; margin:0 0 6px; letter-spacing:.4px; }
+  .modal .msub { font-size:12.5px; color:var(--ink-soft); margin:0 0 18px; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-soft); margin-bottom:5px; font-weight:600; }
+  .field input { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--canvas); color:var(--ink); font-size:14.5px; font-family:'Inter',sans-serif; outline:none; }
+  .field input:focus { border-color:var(--singlet); }
+  .modal-actions { display:flex; gap:10px; margin-top:20px; }
+  .modal-actions button { flex:1; padding:11px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.4px; cursor:pointer; border:none; }
+  .btn-cancel { background:transparent; border:1px solid var(--line); color:var(--ink); }
+  .btn-save { background:var(--singlet); color:#fff; }
+  .btn-save:hover { background:var(--singlet-deep); }
+  .modal .err { color:var(--absent); font-size:12.5px; margin-top:10px; min-height:16px; }
+  .banner { background:var(--whistle); color:#3a2a05; font-size:13px; padding:10px 16px; text-align:center; font-weight:500; display:none; }
+  .banner.show { display:block; }
+  .banner.err { background:var(--absent); color:#fff; }
+  .hidden { display:none !important; }
+  .setup { max-width:640px; margin:60px auto; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:32px; box-shadow:var(--shadow); }
+  .setup h2 { font-family:'Oswald',sans-serif; margin:0 0 12px; }
+  .setup p { font-size:14px; color:var(--ink-soft); }
+  .setup code { background:var(--canvas); padding:2px 6px; border-radius:5px; font-size:12.5px; }
+  @media (max-width:720px) {
+    .scoreboard { grid-template-columns:repeat(2,1fr); }
+    .row { grid-template-columns:1fr; gap:10px; padding:14px 14px; }
+    .row.head { display:none; }
+    .status-group button { padding:8px 0; }
+    .weigh-cell { flex-direction:row; align-items:center; gap:10px; }
+    .weigh { flex:1; }
+    .delta { margin-top:0; white-space:nowrap; }
+    .del { justify-self:end; width:40px; }
+    .week-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  }
+</style>
+</head>
+<body>
+<div class="banner" id="banner"></div>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6.5 6.5 A2 2 0 1 0 6.5 6.4"/>
+          <path d="M7 8.5 L9.5 12 L8 17 M9.5 12 L13 11 M13 11 L16 9 M13 11 L15.5 14.5 L14 18"/>
+        </svg>
+      </div>
+      <div><h1>MAT ROOM</h1><div class="sub">Practice attendance &amp; weigh-in</div></div>
+    </div>
+    <div class="header-right">
+      <div class="auth-box" id="authBox"></div>
+      <div class="date-nav" id="dateNav">
+        <button id="prevDay" title="Previous day">‹</button>
+        <input type="date" id="dateInput">
+        <button id="nextDay" title="Next day">›</button>
+        <button class="today-btn" id="todayBtn">Today</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="app" class="hidden">
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" id="tabDay">Daily</button>
+    <button class="tab" id="tabWeek">Weekly Summary</button>
+    <div class="viewbadge hidden" id="viewBadge">
+      <svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      View only — sign in to edit
+    </div>
+  </div>
+
+  <div id="dailyView">
+    <div class="scoreboard">
+      <div class="score present"><div class="n" id="cPresent">0</div><div class="l">Present</div></div>
+      <div class="score absent"><div class="n" id="cAbsent">0</div><div class="l">Absent</div></div>
+      <div class="score excused"><div class="n" id="cExcused">0</div><div class="l">Excused</div></div>
+      <div class="score"><div class="n" id="cWeigh">0</div><div class="l">Weighed In</div></div>
+    </div>
+    <div class="toolbar">
+      <div>
+        <h2 id="dayTitle">Practice Roster</h2>
+        <div class="hint">Tap a status, then enter weigh-in. Change vs. last weigh-in shows under the number.</div>
+      </div>
+      <div class="btn-row">
+        <button class="ghost-btn" id="exportDay">Export CSV</button>
+        <button class="add-btn" id="addBtn">+ Add Wrestler</button>
+      </div>
+    </div>
+    <div class="roster" id="roster"></div>
+  </div>
+
+  <div id="weekView" class="hidden">
+    <div class="week-nav">
+      <div class="btn-row">
+        <button class="ghost-btn" id="prevWeek">‹ Prev</button>
+        <button class="ghost-btn" id="thisWeek">This Week</button>
+        <button class="ghost-btn" id="nextWeek">Next ›</button>
+      </div>
+      <div class="rangelabel" id="weekRange">—</div>
+      <button class="ghost-btn" id="exportWeek">Export CSV</button>
+    </div>
+    <div class="week-scroll"><table class="week-table" id="weekTable"></table></div>
+  </div>
+
+  <div class="foot"><span class="dot" id="syncDot"></span><span id="syncText">Connecting…</span></div>
+</div>
+</div>
+
+<div id="setup" class="hidden">
+  <div class="setup">
+    <h2>Almost there — add your Firebase keys</h2>
+    <p>This file isn't connected to a database yet. Open it in a text editor, find the <code>firebaseConfig</code> block near the top of the script, and paste in the config from your Firebase project (Project settings → Your apps → Web app). Then re-upload it to your host.</p>
+    <p>Full step-by-step instructions are in the setup guide that came with this file.</p>
+  </div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal">
+    <h3>Add Wrestler</h3>
+    <div class="field"><label for="fName">Name</label><input id="fName" type="text" placeholder="e.g. Jordan Ruiz" autocomplete="off"></div>
+    <div class="field"><label for="fClass">Weight Class <span style="text-transform:none;font-weight:400">(optional)</span></label><input id="fClass" type="text" placeholder="e.g. 138" autocomplete="off"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="cancelAdd">Cancel</button><button class="btn-save" id="saveAdd">Add to Team</button></div>
+  </div>
+</div>
+
+
+<!-- Firebase SDK (modular, loaded as ES module) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ============================================================
+   PASTE YOUR FIREBASE CONFIG HERE
+   Firebase console → Project settings (gear icon) → scroll to
+   "Your apps" → Web app → "Config". Copy the object and replace
+   the placeholder values below.
+   ============================================================ */
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC31q19sdSqEIvM8jtHBzCp8_ledvxfOJY",
+  authDomain: "mat-room-tracker.firebaseapp.com",
+  databaseURL: "https://mat-room-tracker-default-rtdb.firebaseio.com",
+  projectId: "mat-room-tracker",
+  storageBucket: "mat-room-tracker.firebasestorage.app",
+  messagingSenderId: "1050736057230",
+  appId: "1:1050736057230:web:5abde8fb15138048a122df"
+};
+
+/* ============================================================
+   COACH EMAILS — must match the list in firestore.rules.
+   These Google accounts get the edit controls. This list is only
+   for showing/hiding buttons; the REAL enforcement is in your
+   Firestore rules. Keep the two lists the same. Lowercase.
+   ============================================================ */
+const COACH_EMAILS = [
+  "angarcia1001@gmail.com",
+  "perryrpadilla@gmail.com",
+  "rocky.lunceford@loganschools.org"
+];
+/* ============================================================ */
+
+const NOT_CONFIGURED = firebaseConfig.apiKey === "PASTE_API_KEY";
+
+const $ = s => document.querySelector(s);
+if (NOT_CONFIGURED) {
+  $('#app').classList.add('hidden');
+  $('#setup').classList.remove('hidden');
+} else {
+  $('#app').classList.remove('hidden');
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const fdb = getFirestore(app);
+  startApp(auth, fdb, { collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }, COACH_EMAILS);
+}
+
+function startApp(auth, fdb, fb, coachEmails){
+  const COACHES = (coachEmails||[]).map(e=>e.toLowerCase());
+  const AVCOLORS = ['#b3122b','#2f9e6b','#2d6cb3','#8a3fb0','#c77d18','#127d7a','#a02c5c','#4a5f2b'];
+  const STATUSES = ['present','absent','excused'];
+
+  let roster=[], attendance={}, selDate=todayStr(), view='day';
+  let weekStart=mondayOf(todayStr());
+  let unsubRoster=null, unsubAtt=null, unsubWeek=null;
+  let weekData={}, prevWeights={}, editing=new Set();
+  let canEdit=false, user=null;
+
+  function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
+  function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+  function colorFor(id){ let h=0; for(const c of id) h=(h*31+c.charCodeAt(0))>>>0; return AVCOLORS[h%AVCOLORS.length]; }
+  function parseLocal(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+  function fmtDate(dt){ const off=dt.getTimezoneOffset(); return new Date(dt-off*60000).toISOString().slice(0,10); }
+  function prettyDate(s){ return parseLocal(s).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}); }
+  function shortDate(s){ return parseLocal(s).toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'}); }
+  function mondayOf(s){ const dt=parseLocal(s); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); return fmtDate(dt); }
+  function addDays(s,n){ const dt=parseLocal(s); dt.setDate(dt.getDate()+n); return fmtDate(dt); }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function banner(msg, isErr){ const b=$('#banner'); b.textContent=msg; b.className='banner show'+(isErr?' err':''); clearTimeout(banner._t); banner._t=setTimeout(()=>b.classList.remove('show'),5000); }
+
+  // ---- Firestore path helpers ----
+  const rosterCol = ()=> fb.collection(fdb,'roster');
+  const attCol = (d)=> fb.collection(fdb,'attendance',d,'wrestlers');
+  const attDoc = (d,wid)=> fb.doc(fdb,'attendance',d,'wrestlers',wid);
+
+  // ---- Auth ----
+  fb.onAuthStateChanged(auth, u=>{
+    user=u;
+    const email=(u&&u.email||'').toLowerCase();
+    const isCoach = !!u && (COACHES.length===0 || COACHES.includes(email));
+    canEdit = isCoach;
+    if(u && !isCoach) banner('Signed in as '+u.email+', but that account isn\u2019t on the coach list — you have view-only access. A listed coach can add it in the rules.');
+    renderAuthBox(isCoach);
+    $('#viewBadge').classList.toggle('hidden', canEdit);
+    $('#addBtn').disabled = !canEdit;
+    if(view==='day') renderDaily(); else renderWeek();
+  });
+  function renderAuthBox(isCoach){
+    const box=$('#authBox');
+    if(user){
+      const tag = isCoach ? '' : ' (view only)';
+      box.innerHTML = `<span class="who">${escapeHtml(user.email)}${tag}</span><button class="auth-btn" id="signout">Sign out</button>`;
+      $('#signout').onclick=()=>fb.signOut(auth);
+    } else {
+      box.innerHTML = `<button class="auth-btn" id="signin">Coach sign in</button>`;
+      $('#signin').onclick=openLogin;
+    }
+  }
+  async function openLogin(){
+    const provider = new fb.GoogleAuthProvider();
+    try{ await fb.signInWithPopup(auth, provider); }
+    catch(e){
+      if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request') return;
+      if(e.code==='auth/unauthorized-domain') banner('This web address isn\u2019t authorized in Firebase yet (Authentication \u2192 Settings \u2192 Authorized domains).', true);
+      else banner('Sign-in failed: '+e.code, true);
+    }
+  }
+
+  // ---- Data subscriptions ----
+  function start(){
+    $('#syncText').textContent='Connected';
+    unsubRoster = fb.onSnapshot(rosterCol(), snap=>{
+      roster = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      if(view==='day') renderDaily(); else renderWeek();
+    }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
+    watchDate();
+  }
+  function watchDate(){
+    if(unsubAtt) unsubAtt();
+    attendance={};
+    unsubAtt = fb.onSnapshot(attCol(selDate), snap=>{
+      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); renderDaily();
+    }, ()=>{});
+    loadPrevWeights();
+  }
+  function loadPrevWeights(){
+    prevWeights={};
+    const dates=[]; for(let i=1;i<=30;i++) dates.push(addDays(selDate,-i));
+    const found={}; let pending=dates.length;
+    dates.forEach(dstr=>{
+      fb.getDocs(attCol(dstr)).then(snap=>{
+        snap.docs.forEach(doc=>{ const w=doc.data().weight; if(w!=null&&!isNaN(w)){ const cur=found[doc.id]; if(!cur||dstr>cur.date) found[doc.id]={date:dstr,weight:w}; } });
+      }).catch(()=>{}).finally(()=>{ if(--pending===0){ prevWeights=found; if(view==='day') updateDeltas(); } });
+    });
+  }
+
+  // ---- Writes (guarded by canEdit; Firestore rules enforce server-side) ----
+  function setStatus(wid,status){
+    if(!canEdit) return;
+    const cur=attendance[wid]||{}; const next=cur.status===status?{...cur,status:null}:{...cur,status};
+    attendance[wid]=next; updateRowStatus(wid); updateCounts();
+    fb.setDoc(attDoc(selDate,wid), next, {merge:false}).catch(()=>banner('Could not save — are you still signed in?',true));
+  }
+  let weightTimers={};
+  function setWeight(wid,val){
+    if(!canEdit) return;
+    const cur=attendance[wid]||{}; const w=val===''?null:parseFloat(val);
+    const next={...cur, weight:(w===null||isNaN(w))?null:w}; attendance[wid]=next;
+    clearTimeout(weightTimers[wid]);
+    weightTimers[wid]=setTimeout(()=>{ fb.setDoc(attDoc(selDate,wid), next).catch(()=>banner('Could not save weigh-in.',true)); },500);
+    updateDelta(wid); updateCounts();
+  }
+  function addWrestler(name,wclass){ if(!canEdit) return; const ref=fb.doc(rosterCol()); fb.setDoc(ref,{name,wclass:wclass||'',created:Date.now()}).catch(()=>banner('Could not add wrestler.',true)); }
+  function removeWrestler(wid,name){ if(!canEdit) return; if(!confirm('Remove '+name+' from the roster? Past records stay saved.')) return; fb.deleteDoc(fb.doc(fdb,'roster',wid)).catch(()=>banner('Could not remove wrestler.',true)); }
+
+  function updateCounts(){
+    let p=0,a=0,e=0,w=0;
+    roster.forEach(r=>{ const rec=attendance[r.id]||{}; if(rec.status==='present')p++; else if(rec.status==='absent')a++; else if(rec.status==='excused')e++; if(rec.weight!=null&&!isNaN(rec.weight))w++; });
+    $('#cPresent').textContent=p; $('#cAbsent').textContent=a; $('#cExcused').textContent=e; $('#cWeigh').textContent=w;
+  }
+  function deltaHtml(wid){
+    const rec=attendance[wid]||{}, prev=prevWeights[wid];
+    if(rec.weight==null||isNaN(rec.weight)||!prev) return {cls:'',txt:''};
+    const diff=+(rec.weight-prev.weight).toFixed(1);
+    if(diff===0) return {cls:'',txt:'no change'};
+    return {cls:diff>0?'up':'down', txt:(diff>0?'▲':'▼')+' '+Math.abs(diff)+' lb'};
+  }
+  function updateDelta(wid){ const el=document.querySelector('.delta[data-delta="'+wid+'"]'); if(!el) return; const d=deltaHtml(wid); el.className='delta '+d.cls; el.textContent=d.txt; }
+  function updateDeltas(){ roster.forEach(r=>updateDelta(r.id)); }
+  function updateRowStatus(wid){
+    const row=document.querySelector('.row[data-id="'+wid+'"]'); if(!row) return;
+    const rec=attendance[wid]||{};
+    row.querySelectorAll('[data-status]').forEach(btn=>{ if(rec.status===btn.dataset.status) btn.setAttribute('data-on',btn.dataset.status); else btn.removeAttribute('data-on'); });
+    row.querySelector('.weigh').classList.toggle('locked', rec.status==='absent'||rec.status==='excused');
+  }
+
+  function renderDaily(){
+    $('#dayTitle').textContent=prettyDate(selDate);
+    const el=$('#roster');
+    if(roster.length===0){
+      el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="7" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M17 11h5M19.5 8.5v5"/></svg><p>No wrestlers yet.</p>${canEdit?'<p style="font-size:12.5px">Add your team with the button above.</p>':'<p style="font-size:12.5px">A coach can sign in to add the roster.</p>'}</div>`;
+      updateCounts(); return;
+    }
+    let rows=`<div class="row head"><div>Wrestler</div><div>Attendance</div><div style="text-align:right">Weigh-In</div><div></div></div>`;
+    roster.forEach(r=>{
+      const rec=attendance[r.id]||{}, col=colorFor(r.id);
+      const wval=(rec.weight!=null&&!isNaN(rec.weight))?rec.weight:'';
+      const locked=rec.status==='absent'||rec.status==='excused';
+      const d=deltaHtml(r.id);
+      const dis=canEdit?'':'disabled';
+      rows+=`<div class="row" data-id="${r.id}">
+        <div class="wrestler"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}</div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class</div>`:''}</div></div>
+        <div class="status-group ${canEdit?'':'ro'}">${STATUSES.map(s=>`<button data-status="${s}" ${rec.status===s?`data-on="${s}"`:''} ${dis}>${s[0].toUpperCase()+s.slice(1)}</button>`).join('')}</div>
+        <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div></div>
+        <button class="del ${canEdit?'':'hidden'}" data-del title="Remove from roster">×</button>
+      </div>`;
+    });
+    el.innerHTML=rows;
+    el.querySelectorAll('.row[data-id]').forEach(row=>{
+      const id=row.dataset.id;
+      row.querySelectorAll('[data-status]').forEach(btn=>{ btn.onclick=()=>setStatus(id,btn.dataset.status); });
+      const wi=row.querySelector('[data-weight]');
+      if(wi){ wi.oninput=()=>setWeight(id,wi.value); wi.onfocus=()=>editing.add(id); wi.onblur=()=>editing.delete(id); }
+      const name=roster.find(r=>r.id===id)?.name||'';
+      const del=row.querySelector('[data-del]'); if(del) del.onclick=()=>removeWrestler(id,name);
+    });
+    updateCounts();
+  }
+
+  function watchWeek(){
+    if(unsubWeek) unsubWeek.forEach(u=>u());
+    unsubWeek=[]; weekData={};
+    for(let i=0;i<7;i++){
+      const dstr=addDays(weekStart,i);
+      unsubWeek.push(fb.onSnapshot(attCol(dstr), snap=>{ const day={}; snap.docs.forEach(doc=>day[doc.id]=doc.data()); weekData[dstr]=day; if(view==='week') renderWeek(); }, ()=>{}));
+    }
+  }
+  function renderWeek(){
+    const days=[]; for(let i=0;i<7;i++) days.push(addDays(weekStart,i));
+    $('#weekRange').textContent=shortDate(weekStart)+' – '+shortDate(days[6]);
+    const t=$('#weekTable');
+    if(roster.length===0){ t.innerHTML='<tr><td style="padding:40px" class="cell-x">No wrestlers on the roster yet.</td></tr>'; return; }
+    const activeDays=days.filter(d=>weekData[d]&&Object.values(weekData[d]).some(r=>r.status||r.weight!=null));
+    const showDays=activeDays.length?activeDays:days.filter(d=>{const dow=parseLocal(d).getDay();return dow>=1&&dow<=5;});
+    let head='<tr><th style="text-align:left">Wrestler</th>';
+    showDays.forEach(d=>head+='<th>'+parseLocal(d).toLocaleDateString(undefined,{weekday:'short'})+'<br><span style="font-weight:400">'+parseLocal(d).toLocaleDateString(undefined,{month:'numeric',day:'numeric'})+'</span></th>');
+    head+='<th class="totcol">Att. Rate</th><th class="totcol">Wt. Change</th></tr>';
+    let body='';
+    roster.forEach(r=>{
+      let attended=0,held=0,firstW=null,lastW=null,cells='';
+      showDays.forEach(d=>{
+        const rec=(weekData[d]||{})[r.id]||{}, st=rec.status;
+        if(st){held++; if(st==='present')attended++;}
+        let mark='<span class="cell-x">—</span>';
+        if(st==='present')mark='<span class="cell-p">P</span>'; else if(st==='absent')mark='<span class="cell-a">A</span>'; else if(st==='excused')mark='<span class="cell-e">E</span>';
+        let wtxt='';
+        if(rec.weight!=null&&!isNaN(rec.weight)){ wtxt='<div class="cell-w">'+rec.weight+'</div>'; if(firstW===null)firstW=rec.weight; lastW=rec.weight; }
+        cells+='<td>'+mark+wtxt+'</td>';
+      });
+      const rate=held?Math.round(attended/held*100)+'%':'—';
+      let wc='—',wcls='';
+      if(firstW!=null&&lastW!=null&&firstW!==lastW){ const diff=+(lastW-firstW).toFixed(1); wc=(diff>0?'+':'')+diff+' lb'; wcls=diff>0?'cell-a':'cell-p'; }
+      else if(firstW!=null){ wc='steady'; }
+      body+=`<tr><td class="name">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate">${rate}</td><td class="totcol ${wcls}">${wc}</td></tr>`;
+    });
+    t.innerHTML=head+body;
+  }
+
+  function exportDayCSV(){
+    const rows=[['Date','Wrestler','Weight Class','Status','Weight (lb)','Change vs Last']];
+    roster.forEach(r=>{ const rec=attendance[r.id]||{}, prev=prevWeights[r.id]; let chg=''; if(rec.weight!=null&&!isNaN(rec.weight)&&prev){const d=+(rec.weight-prev.weight).toFixed(1); chg=(d>0?'+':'')+d;} rows.push([selDate,r.name,r.wclass||'',rec.status||'',(rec.weight!=null&&!isNaN(rec.weight))?rec.weight:'',chg]); });
+    downloadCSV(rows,'attendance_'+selDate+'.csv');
+  }
+  async function exportWeekCSV(){
+    const days=[]; for(let i=0;i<7;i++) days.push(addDays(weekStart,i));
+    const header=['Wrestler','Weight Class']; days.forEach(d=>{header.push(shortDate(d)+' Status'); header.push(shortDate(d)+' Weight');}); header.push('Attendance Rate','Weight Change');
+    const rows=[header], snaps={};
+    await Promise.all(days.map(d=>fb.getDocs(attCol(d)).then(s=>{const day={};s.docs.forEach(doc=>day[doc.id]=doc.data());snaps[d]=day;}).catch(()=>{snaps[d]={};})));
+    roster.forEach(r=>{
+      let attended=0,held=0,firstW=null,lastW=null; const line=[r.name,r.wclass||''];
+      days.forEach(d=>{ const rec=(snaps[d]||{})[r.id]||{}; if(rec.status){held++;if(rec.status==='present')attended++;} line.push(rec.status||''); if(rec.weight!=null&&!isNaN(rec.weight)){line.push(rec.weight);if(firstW===null)firstW=rec.weight;lastW=rec.weight;}else line.push(''); });
+      line.push(held?Math.round(attended/held*100)+'%':''); line.push((firstW!=null&&lastW!=null)?((lastW-firstW>0?'+':'')+(+(lastW-firstW).toFixed(1))):''); rows.push(line);
+    });
+    downloadCSV(rows,'weekly_'+weekStart+'.csv');
+  }
+  function downloadCSV(rows,filename){
+    const csv=rows.map(r=>r.map(c=>{const s=String(c??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'}), url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  function syncDateInput(){ $('#dateInput').value=selDate; }
+  function changeDate(nd){ selDate=nd; syncDateInput(); watchDate(); renderDaily(); }
+  function shiftDate(n){ changeDate(addDays(selDate,n)); }
+  function setView(v){
+    view=v;
+    $('#tabDay').classList.toggle('active',v==='day'); $('#tabWeek').classList.toggle('active',v==='week');
+    $('#dailyView').classList.toggle('hidden',v!=='day'); $('#weekView').classList.toggle('hidden',v!=='week');
+    $('#dateNav').style.visibility=v==='day'?'visible':'hidden';
+    if(v==='week'){ watchWeek(); renderWeek(); } else renderDaily();
+  }
+
+  // wire UI
+  $('#prevDay').onclick=()=>shiftDate(-1); $('#nextDay').onclick=()=>shiftDate(1);
+  $('#todayBtn').onclick=()=>changeDate(todayStr()); $('#dateInput').onchange=e=>changeDate(e.target.value);
+  $('#tabDay').onclick=()=>setView('day'); $('#tabWeek').onclick=()=>setView('week');
+  $('#prevWeek').onclick=()=>{weekStart=addDays(weekStart,-7);watchWeek();renderWeek();};
+  $('#nextWeek').onclick=()=>{weekStart=addDays(weekStart,7);watchWeek();renderWeek();};
+  $('#thisWeek').onclick=()=>{weekStart=mondayOf(todayStr());watchWeek();renderWeek();};
+  $('#exportDay').onclick=exportDayCSV; $('#exportWeek').onclick=exportWeekCSV;
+  const scrim=$('#scrim');
+  $('#addBtn').onclick=()=>{ if(!canEdit){banner('Sign in as a coach to add wrestlers.');return;} scrim.classList.add('open'); $('#fName').value='';$('#fClass').value=''; setTimeout(()=>$('#fName').focus(),50); };
+  $('#cancelAdd').onclick=()=>scrim.classList.remove('open');
+  scrim.onclick=e=>{ if(e.target===scrim) scrim.classList.remove('open'); };
+  $('#saveAdd').onclick=()=>{ const n=$('#fName').value.trim(); if(!n){$('#fName').focus();return;} addWrestler(n,$('#fClass').value.trim()); scrim.classList.remove('open'); };
+  $('#fName').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();}; $('#fClass').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();};
+
+  syncDateInput();
+  start();
+}
+</script>
+</body>
+</html>
