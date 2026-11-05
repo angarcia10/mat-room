@@ -72,8 +72,12 @@
   .row:last-child { border-bottom:none; }
   .row.head { background:color-mix(in srgb,var(--mat) 5%,var(--card)); font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft); padding-top:9px; padding-bottom:9px; font-weight:600; }
   .wrestler { display:flex; align-items:center; gap:11px; min-width:0; }
+  .wrestler.clickable { cursor:pointer; border-radius:8px; margin:-4px -6px; padding:4px 6px; transition:background .1s; }
+  .wrestler.clickable:hover { background:color-mix(in srgb,var(--mat) 6%,var(--card)); }
   .avatar { width:32px; height:32px; flex:none; border-radius:50%; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:600; font-size:13px; color:#fff; letter-spacing:.3px; }
   .wname { font-weight:600; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wname .chev { color:var(--ink-soft); font-weight:400; margin-left:5px; opacity:0; transition:opacity .1s; }
+  .wrestler.clickable:hover .wname .chev { opacity:.6; }
   .wclass { font-size:11.5px; color:var(--ink-soft); }
   .status-group { display:flex; gap:5px; }
   .status-group button { flex:1; border:1px solid var(--line); background:transparent; color:var(--ink-soft); padding:6px 0; border-radius:7px; cursor:pointer; font-size:12px; font-weight:600; font-family:'Oswald',sans-serif; letter-spacing:.4px; transition:all .1s; }
@@ -106,6 +110,8 @@
   .week-table th, .week-table td { padding:10px 12px; text-align:center; font-size:13px; border-bottom:1px solid var(--line); }
   .week-table th { background:color-mix(in srgb,var(--mat) 5%,var(--card)); font-family:'Oswald',sans-serif; font-weight:500; letter-spacing:.4px; text-transform:uppercase; font-size:11px; color:var(--ink-soft); }
   .week-table td.name { text-align:left; font-weight:600; }
+  .week-table td.name.clickable { cursor:pointer; }
+  .week-table td.name.clickable:hover { color:var(--singlet); }
   .week-table td.name .sub2 { font-weight:400; font-size:11px; color:var(--ink-soft); }
   .week-table tr:last-child td { border-bottom:none; }
   .cell-p { color:var(--present); font-weight:600; } .cell-a { color:var(--absent); font-weight:600; } .cell-e { color:var(--excused); font-weight:600; } .cell-x { color:var(--ink-soft); opacity:.5; }
@@ -122,8 +128,8 @@
   .modal .msub { font-size:12.5px; color:var(--ink-soft); margin:0 0 18px; }
   .field { margin-bottom:14px; }
   .field label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-soft); margin-bottom:5px; font-weight:600; }
-  .field input { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--canvas); color:var(--ink); font-size:14.5px; font-family:'Inter',sans-serif; outline:none; }
-  .field input:focus { border-color:var(--singlet); }
+  .field input, .field select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--canvas); color:var(--ink); font-size:14.5px; font-family:'Inter',sans-serif; outline:none; }
+  .field input:focus, .field select:focus { border-color:var(--singlet); }
   .modal-actions { display:flex; gap:10px; margin-top:20px; }
   .modal-actions button { flex:1; padding:11px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.4px; cursor:pointer; border:none; }
   .btn-cancel { background:transparent; border:1px solid var(--line); color:var(--ink); }
@@ -138,6 +144,43 @@
   .setup h2 { font-family:'Oswald',sans-serif; margin:0 0 12px; }
   .setup p { font-size:14px; color:var(--ink-soft); }
   .setup code { background:var(--canvas); padding:2px 6px; border-radius:5px; font-size:12.5px; }
+
+  /* ---- Profile modal ---- */
+  .profile-modal { max-width:560px; padding:0; overflow:hidden; max-height:90vh; display:flex; flex-direction:column; }
+  .profile-head { background:var(--mat); color:#f5f2ec; padding:22px 24px; display:flex; align-items:center; gap:15px; position:relative; }
+  .profile-head .pavatar { width:52px; height:52px; flex:none; border-radius:50%; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:600; font-size:20px; color:#fff; }
+  .profile-head .pname { font-family:'Oswald',sans-serif; font-size:23px; font-weight:600; line-height:1.1; letter-spacing:.3px; }
+  .profile-head .pclass { font-size:12.5px; color:#9fb0c0; margin-top:3px; }
+  .profile-close { position:absolute; top:14px; right:16px; background:rgba(255,255,255,.1); border:none; color:#f5f2ec; width:30px; height:30px; border-radius:7px; cursor:pointer; font-size:18px; line-height:1; }
+  .profile-close:hover { background:rgba(255,255,255,.2); }
+  .profile-body { padding:22px 24px; overflow-y:auto; }
+  .profile-loading { padding:40px; text-align:center; color:var(--ink-soft); font-size:14px; }
+  .pstats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  .pstat { background:var(--canvas); border:1px solid var(--line); border-radius:9px; padding:11px 12px; }
+  .pstat .pn { font-family:'Oswald',sans-serif; font-size:21px; font-weight:600; line-height:1; }
+  .pstat .pl { font-size:10.5px; color:var(--ink-soft); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+  .pstat.p .pn { color:var(--present); } .pstat.a .pn { color:var(--absent); } .pstat.e .pn { color:var(--excused); }
+  .psection-title { font-family:'Oswald',sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-soft); margin:0 0 10px; font-weight:600; }
+  .pchart { width:100%; height:120px; background:var(--canvas); border:1px solid var(--line); border-radius:9px; margin-bottom:6px; }
+  .pchart-empty { display:grid; place-items:center; height:120px; background:var(--canvas); border:1px solid var(--line); border-radius:9px; color:var(--ink-soft); font-size:12.5px; margin-bottom:6px; }
+  .pchart-cap { font-size:11px; color:var(--ink-soft); text-align:center; margin-bottom:20px; }
+  .whistory { max-height:150px; overflow-y:auto; border:1px solid var(--line); border-radius:9px; }
+  .whistory table { width:100%; border-collapse:collapse; font-size:13px; }
+  .whistory td { padding:7px 12px; border-bottom:1px solid var(--line); }
+  .whistory tr:last-child td { border-bottom:none; }
+  .whistory td.wd { color:var(--ink-soft); }
+  .whistory td.ww { text-align:right; font-family:'Oswald',sans-serif; }
+  .whistory td.wc2 { text-align:right; font-family:'Oswald',sans-serif; font-size:11.5px; width:70px; }
+  .wc2.up { color:var(--absent); } .wc2.down { color:var(--present); }
+  .pedit { background:var(--canvas); border:1px solid var(--line); border-radius:9px; padding:15px 16px; margin-bottom:18px; }
+  .pedit-row { display:flex; gap:10px; align-items:flex-end; }
+  .pedit-row .field { flex:1; margin-bottom:0; }
+  .pedit .save-cls { padding:10px 16px; border-radius:8px; border:none; background:var(--singlet); color:#fff; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; cursor:pointer; white-space:nowrap; }
+  .pedit .save-cls:hover { background:var(--singlet-deep); }
+  .pedit .save-cls:disabled { background:var(--line); color:var(--ink-soft); cursor:not-allowed; }
+  .pedit .savedtag { font-size:12px; color:var(--present); font-weight:600; margin-left:4px; opacity:0; transition:opacity .2s; }
+  .pedit .savedtag.show { opacity:1; }
+
   @media (max-width:720px) {
     .scoreboard { grid-template-columns:repeat(2,1fr); }
     .row { grid-template-columns:1fr; gap:10px; padding:14px 14px; }
@@ -148,6 +191,9 @@
     .delta { margin-top:0; white-space:nowrap; }
     .del { justify-self:end; width:40px; }
     .week-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .pstats { grid-template-columns:repeat(3,1fr); gap:7px; }
+    .pedit-row { flex-direction:column; align-items:stretch; }
+    .pedit .save-cls { width:100%; }
   }
 </style>
 </head>
@@ -194,7 +240,7 @@
     <div class="toolbar">
       <div>
         <h2 id="dayTitle">Practice Roster</h2>
-        <div class="hint">Tap a status, then enter weigh-in. Change vs. last weigh-in shows under the number.</div>
+        <div class="hint">Tap a status, then enter weigh-in. Tap a name to open their profile.</div>
       </div>
       <div class="btn-row">
         <button class="ghost-btn" id="exportDay">Export CSV</button>
@@ -238,13 +284,24 @@
   </div>
 </div>
 
+<div class="scrim" id="profileScrim">
+  <div class="modal profile-modal">
+    <div class="profile-head">
+      <div class="pavatar" id="pAvatar"></div>
+      <div><div class="pname" id="pName"></div><div class="pclass" id="pClass"></div></div>
+      <button class="profile-close" id="profileClose">×</button>
+    </div>
+    <div class="profile-body" id="profileBody"></div>
+  </div>
+</div>
+
 
 <!-- Firebase SDK (modular, loaded as ES module) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot }
+import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ============================================================
@@ -277,6 +334,14 @@ const COACH_EMAILS = [
 ];
 /* ============================================================ */
 
+/* ============================================================
+   STANDARD WEIGHT CLASSES — offered in the weight-class picker.
+   Edit this list to match your league if needed. Coaches can
+   also type a custom value instead of picking one.
+   ============================================================ */
+const WEIGHT_CLASSES = ["106","113","120","126","132","138","144","150","157","165","175","190","215","285"];
+/* ============================================================ */
+
 const NOT_CONFIGURED = firebaseConfig.apiKey === "PASTE_API_KEY";
 
 const $ = s => document.querySelector(s);
@@ -288,19 +353,22 @@ if (NOT_CONFIGURED) {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const fdb = getFirestore(app);
-  startApp(auth, fdb, { collection, doc, setDoc, deleteDoc, getDocs, onSnapshot, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }, COACH_EMAILS);
+  startApp(auth, fdb, { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }, COACH_EMAILS, WEIGHT_CLASSES);
 }
 
-function startApp(auth, fdb, fb, coachEmails){
+function startApp(auth, fdb, fb, coachEmails, weightClasses){
   const COACHES = (coachEmails||[]).map(e=>e.toLowerCase());
+  const WCLASSES = weightClasses||[];
   const AVCOLORS = ['#b3122b','#2f9e6b','#2d6cb3','#8a3fb0','#c77d18','#127d7a','#a02c5c','#4a5f2b'];
   const STATUSES = ['present','absent','excused'];
+  const SEASON_SCAN_DAYS = 220; // how far back a profile scans for stats (a full season)
 
   let roster=[], attendance={}, selDate=todayStr(), view='day';
   let weekStart=mondayOf(todayStr());
   let unsubRoster=null, unsubAtt=null, unsubWeek=null;
   let weekData={}, prevWeights={}, editing=new Set();
   let canEdit=false, user=null;
+  let profileOpenId=null, profileToken=0;
 
   function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
   function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
@@ -309,6 +377,7 @@ function startApp(auth, fdb, fb, coachEmails){
   function fmtDate(dt){ const off=dt.getTimezoneOffset(); return new Date(dt-off*60000).toISOString().slice(0,10); }
   function prettyDate(s){ return parseLocal(s).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}); }
   function shortDate(s){ return parseLocal(s).toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'}); }
+  function medDate(s){ return parseLocal(s).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
   function mondayOf(s){ const dt=parseLocal(s); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); return fmtDate(dt); }
   function addDays(s,n){ const dt=parseLocal(s); dt.setDate(dt.getDate()+n); return fmtDate(dt); }
   function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -330,6 +399,7 @@ function startApp(auth, fdb, fb, coachEmails){
     $('#viewBadge').classList.toggle('hidden', canEdit);
     $('#addBtn').disabled = !canEdit;
     if(view==='day') renderDaily(); else renderWeek();
+    if(profileOpenId) renderProfile(profileOpenId); // refresh edit controls if open
   });
   function renderAuthBox(isCoach){
     const box=$('#authBox');
@@ -358,6 +428,7 @@ function startApp(auth, fdb, fb, coachEmails){
     unsubRoster = fb.onSnapshot(rosterCol(), snap=>{
       roster = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
       if(view==='day') renderDaily(); else renderWeek();
+      if(profileOpenId){ const w=roster.find(r=>r.id===profileOpenId); if(w) updateProfileHeader(w); }
     }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
     watchDate();
   }
@@ -398,6 +469,10 @@ function startApp(auth, fdb, fb, coachEmails){
   }
   function addWrestler(name,wclass){ if(!canEdit) return; const ref=fb.doc(rosterCol()); fb.setDoc(ref,{name,wclass:wclass||'',created:Date.now()}).catch(()=>banner('Could not add wrestler.',true)); }
   function removeWrestler(wid,name){ if(!canEdit) return; if(!confirm('Remove '+name+' from the roster? Past records stay saved.')) return; fb.deleteDoc(fb.doc(fdb,'roster',wid)).catch(()=>banner('Could not remove wrestler.',true)); }
+  function updateWeightClass(wid, wclass){
+    if(!canEdit) return Promise.reject();
+    return fb.updateDoc(fb.doc(fdb,'roster',wid), {wclass: wclass||''});
+  }
 
   function updateCounts(){
     let p=0,a=0,e=0,w=0;
@@ -435,7 +510,7 @@ function startApp(auth, fdb, fb, coachEmails){
       const d=deltaHtml(r.id);
       const dis=canEdit?'':'disabled';
       rows+=`<div class="row" data-id="${r.id}">
-        <div class="wrestler"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}</div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class</div>`:''}</div></div>
+        <div class="wrestler clickable" data-profile="${r.id}" title="Open profile"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}<span class="chev">›</span></div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class</div>`:''}</div></div>
         <div class="status-group ${canEdit?'':'ro'}">${STATUSES.map(s=>`<button data-status="${s}" ${rec.status===s?`data-on="${s}"`:''} ${dis}>${s[0].toUpperCase()+s.slice(1)}</button>`).join('')}</div>
         <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div></div>
         <button class="del ${canEdit?'':'hidden'}" data-del title="Remove from roster">×</button>
@@ -449,6 +524,7 @@ function startApp(auth, fdb, fb, coachEmails){
       if(wi){ wi.oninput=()=>setWeight(id,wi.value); wi.onfocus=()=>editing.add(id); wi.onblur=()=>editing.delete(id); }
       const name=roster.find(r=>r.id===id)?.name||'';
       const del=row.querySelector('[data-del]'); if(del) del.onclick=()=>removeWrestler(id,name);
+      const prof=row.querySelector('[data-profile]'); if(prof) prof.onclick=()=>openProfile(id);
     });
     updateCounts();
   }
@@ -487,9 +563,154 @@ function startApp(auth, fdb, fb, coachEmails){
       let wc='—',wcls='';
       if(firstW!=null&&lastW!=null&&firstW!==lastW){ const diff=+(lastW-firstW).toFixed(1); wc=(diff>0?'+':'')+diff+' lb'; wcls=diff>0?'cell-a':'cell-p'; }
       else if(firstW!=null){ wc='steady'; }
-      body+=`<tr><td class="name">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate">${rate}</td><td class="totcol ${wcls}">${wc}</td></tr>`;
+      body+=`<tr><td class="name clickable" data-profile="${r.id}">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate">${rate}</td><td class="totcol ${wcls}">${wc}</td></tr>`;
     });
     t.innerHTML=head+body;
+    t.querySelectorAll('[data-profile]').forEach(td=>{ td.onclick=()=>openProfile(td.dataset.profile); });
+  }
+
+  /* ---------- PROFILE ---------- */
+  function updateProfileHeader(w){
+    $('#pAvatar').style.background=colorFor(w.id);
+    $('#pAvatar').textContent=initials(w.name);
+    $('#pName').textContent=w.name;
+    $('#pClass').textContent = w.wclass ? (w.wclass+' lb weight class') : 'No weight class set';
+  }
+  function openProfile(wid){
+    const w=roster.find(r=>r.id===wid); if(!w) return;
+    profileOpenId=wid;
+    updateProfileHeader(w);
+    $('#profileScrim').classList.add('open');
+    renderProfile(wid);
+  }
+  function closeProfile(){ profileOpenId=null; profileToken++; $('#profileScrim').classList.remove('open'); }
+
+  async function renderProfile(wid){
+    const w=roster.find(r=>r.id===wid); if(!w) return;
+    const body=$('#profileBody');
+    const myToken=++profileToken;
+    body.innerHTML=`<div class="profile-loading">Loading season stats…</div>`;
+
+    // Scan the season for this wrestler's records.
+    const dates=[]; for(let i=0;i<SEASON_SCAN_DAYS;i++) dates.push(addDays(todayStr(),-i));
+    const recs=[]; // {date, status, weight}
+    await Promise.all(dates.map(dstr=>
+      fb.getDocs(attCol(dstr)).then(snap=>{
+        snap.docs.forEach(doc=>{ if(doc.id===wid){ const d=doc.data(); if(d.status||d.weight!=null) recs.push({date:dstr, status:d.status||null, weight:(d.weight!=null&&!isNaN(d.weight))?d.weight:null}); } });
+      }).catch(()=>{})
+    ));
+    if(myToken!==profileToken) return; // a newer open/close superseded this
+
+    recs.sort((a,b)=>a.date<b.date?-1:1);
+    const present=recs.filter(r=>r.status==='present').length;
+    const absent=recs.filter(r=>r.status==='absent').length;
+    const excused=recs.filter(r=>r.status==='excused').length;
+    const held=present+absent+excused;
+    const rate=held?Math.round(present/held*100):null;
+    const weighins=recs.filter(r=>r.weight!=null);
+    const weights=weighins.map(r=>r.weight);
+    const curW=weights.length?weights[weights.length-1]:null;
+    const startW=weights.length?weights[0]:null;
+    const hiW=weights.length?Math.max(...weights):null;
+    const loW=weights.length?Math.min(...weights):null;
+    const netW=(startW!=null&&curW!=null)?+(curW-startW).toFixed(1):null;
+
+    const fmtW=v=>v==null?'—':v;
+    const netTxt = netW==null?'—':((netW>0?'+':'')+netW+' lb');
+    const netCls = netW==null?'':(netW>0?'a':(netW<0?'p':''));
+
+    let html='';
+
+    // Coach edit panel for weight class
+    if(canEdit){
+      const isStd = w.wclass && WCLASSES.includes(String(w.wclass));
+      const opts = ['<option value="">— none —</option>']
+        .concat(WCLASSES.map(c=>`<option value="${c}" ${String(w.wclass)===c?'selected':''}>${c} lb</option>`))
+        .concat([`<option value="__custom__" ${(w.wclass&&!isStd)?'selected':''}>Custom…</option>`]).join('');
+      html+=`<div class="pedit">
+        <div class="psection-title">Edit weight class <span class="savedtag" id="clsSaved">Saved ✓</span></div>
+        <div class="pedit-row">
+          <div class="field"><label>Standard class</label><select id="clsSelect">${opts}</select></div>
+          <div class="field ${(w.wclass&&!isStd)?'':'hidden'}" id="clsCustomWrap"><label>Custom value</label><input id="clsCustom" type="text" placeholder="e.g. 138" value="${(w.wclass&&!isStd)?escapeHtml(String(w.wclass)):''}"></div>
+          <button class="save-cls" id="clsSave">Save</button>
+        </div>
+      </div>`;
+    }
+
+    // Stats grid
+    html+=`<div class="pstats">
+      <div class="pstat p"><div class="pn">${present}</div><div class="pl">Present</div></div>
+      <div class="pstat a"><div class="pn">${absent}</div><div class="pl">Absent</div></div>
+      <div class="pstat e"><div class="pn">${excused}</div><div class="pl">Excused</div></div>
+      <div class="pstat"><div class="pn">${rate==null?'—':rate+'%'}</div><div class="pl">Att. Rate</div></div>
+      <div class="pstat"><div class="pn">${fmtW(curW)}</div><div class="pl">Current Wt</div></div>
+      <div class="pstat"><div class="pn" style="color:${netCls==='a'?'var(--absent)':netCls==='p'?'var(--present)':'inherit'}">${netTxt}</div><div class="pl">Net Change</div></div>
+    </div>`;
+
+    // Weight trend
+    html+=`<div class="psection-title">Weight trend</div>`;
+    if(weighins.length>=2){
+      html+=sparkline(weighins);
+      html+=`<div class="pchart-cap">${weighins.length} weigh-ins · start ${startW} · high ${hiW} · low ${loW}</div>`;
+    } else if(weighins.length===1){
+      html+=`<div class="pchart-empty">One weigh-in so far (${weighins[0].weight} lb on ${medDate(weighins[0].date)}). Need two to chart a trend.</div>`;
+    } else {
+      html+=`<div class="pchart-empty">No weigh-ins recorded yet.</div>`;
+    }
+
+    // Weigh-in history
+    if(weighins.length){
+      let rowsH=''; let prev=null;
+      for(let i=weighins.length-1;i>=0;i--){
+        const r=weighins[i];
+        let chg='', ccls='';
+        if(i>0){ const d=+(r.weight-weighins[i-1].weight).toFixed(1); if(d!==0){ chg=(d>0?'▲ ':'▼ ')+Math.abs(d); ccls=d>0?'up':'down'; } else chg='—'; }
+        rowsH+=`<tr><td class="wd">${medDate(r.date)}</td><td class="ww">${r.weight} lb</td><td class="wc2 ${ccls}">${chg}</td></tr>`;
+      }
+      html+=`<div class="psection-title" style="margin-top:20px">Weigh-in history</div><div class="whistory"><table>${rowsH}</table></div>`;
+    }
+
+    if(held===0 && weighins.length===0){
+      html+=`<div class="pchart-cap" style="margin-top:14px">No attendance recorded for this wrestler yet. Stats will fill in as you track practices.</div>`;
+    }
+
+    body.innerHTML=html;
+
+    // Wire the weight-class editor
+    if(canEdit){
+      const sel=$('#clsSelect'), customWrap=$('#clsCustomWrap'), custom=$('#clsCustom'), saveBtn=$('#clsSave'), saved=$('#clsSaved');
+      sel.onchange=()=>{ customWrap.classList.toggle('hidden', sel.value!=='__custom__'); if(sel.value==='__custom__') custom.focus(); };
+      const doSave=async()=>{
+        let val = sel.value==='__custom__' ? custom.value.trim() : sel.value;
+        saveBtn.disabled=true;
+        try{ await updateWeightClass(wid, val); saved.classList.add('show'); setTimeout(()=>saved.classList.remove('show'),1600); const ww=roster.find(r=>r.id===wid); if(ww){ww.wclass=val; updateProfileHeader(ww);} }
+        catch(e){ banner('Could not save weight class — are you still signed in?',true); }
+        finally{ saveBtn.disabled=false; }
+      };
+      saveBtn.onclick=doSave;
+      if(custom) custom.onkeydown=e=>{ if(e.key==='Enter') doSave(); };
+    }
+  }
+
+  // Simple inline SVG sparkline for weight over time.
+  function sparkline(weighins){
+    const W=512, H=120, padX=10, padT=14, padB=18;
+    const ws=weighins.map(r=>r.weight);
+    let min=Math.min(...ws), max=Math.max(...ws);
+    if(min===max){ min-=1; max+=1; }
+    const n=weighins.length;
+    const x=i=> padX + (n===1?0:(i*(W-2*padX)/(n-1)));
+    const y=v=> padT + (max-v)*(H-padT-padB)/(max-min);
+    let pts=weighins.map((r,i)=>`${x(i).toFixed(1)},${y(r.weight).toFixed(1)}`).join(' ');
+    let dots=weighins.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.weight).toFixed(1)}" r="2.6" fill="var(--singlet)"/>`).join('');
+    // first/last labels
+    const f=weighins[0], l=weighins[n-1];
+    const startLbl=`<text x="${x(0).toFixed(1)}" y="${(y(f.weight)-7).toFixed(1)}" font-size="11" fill="var(--ink-soft)" font-family="Oswald,sans-serif">${f.weight}</text>`;
+    const endLbl=`<text x="${x(n-1).toFixed(1)}" y="${(y(l.weight)-7).toFixed(1)}" font-size="11" fill="var(--ink)" font-family="Oswald,sans-serif" text-anchor="end">${l.weight}</text>`;
+    return `<svg class="pchart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <polyline points="${pts}" fill="none" stroke="var(--singlet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      ${dots}${startLbl}${endLbl}
+    </svg>`;
   }
 
   function exportDayCSV(){
@@ -541,9 +762,16 @@ function startApp(auth, fdb, fb, coachEmails){
   $('#saveAdd').onclick=()=>{ const n=$('#fName').value.trim(); if(!n){$('#fName').focus();return;} addWrestler(n,$('#fClass').value.trim()); scrim.classList.remove('open'); };
   $('#fName').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();}; $('#fClass').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();};
 
+  // profile modal wiring
+  const pscrim=$('#profileScrim');
+  $('#profileClose').onclick=closeProfile;
+  pscrim.onclick=e=>{ if(e.target===pscrim) closeProfile(); };
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && profileOpenId) closeProfile(); });
+
   syncDateInput();
   start();
 }
 </script>
 </body>
 </html>
+
