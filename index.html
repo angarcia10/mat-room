@@ -184,6 +184,17 @@
   .pedit .savedtag { font-size:12px; color:var(--present); font-weight:600; margin-left:4px; opacity:0; transition:opacity .2s; }
   .pedit .savedtag.show { opacity:1; }
 
+  /* ---- Sign-in gate ---- */
+  .gate { min-height:calc(100vh - 140px); display:flex; align-items:center; justify-content:center; padding:32px 18px; }
+  .gate-card { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); max-width:400px; width:100%; padding:30px 26px; text-align:center; }
+  .gate-card .lockico { width:30px; height:30px; color:var(--singlet); margin-bottom:10px; }
+  .gate-card h2 { font-family:'Oswald',sans-serif; font-size:22px; letter-spacing:.5px; margin:0 0 8px; }
+  .gate-card p { color:var(--ink-soft); font-size:14px; line-height:1.5; margin:0 0 20px; }
+  .gate-card .who { font-weight:600; color:var(--ink); word-break:break-all; }
+  .gate-btn { border:none; background:var(--singlet); color:#fff; padding:12px 22px; border-radius:9px; font-family:'Oswald',sans-serif; font-size:15px; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; }
+  .gate-btn:hover { background:var(--singlet-deep); }
+  .gate-btn.alt { background:transparent; color:var(--ink); border:1px solid var(--line); }
+
   /* ---- Practice-day tag (Daily) ---- */
   .daytag { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft); margin:4px 0 2px; min-height:20px; }
   .daytag .pill { display:inline-flex; align-items:center; gap:7px; font-weight:600; color:var(--ink); }
@@ -279,7 +290,7 @@
     </div>
     <div class="header-right">
       <div class="auth-box" id="authBox"></div>
-      <div class="date-nav" id="dateNav">
+      <div class="date-nav hidden" id="dateNav">
         <button id="prevDay" title="Previous day">‹</button>
         <input type="date" id="dateInput">
         <button id="nextDay" title="Next day">›</button>
@@ -288,6 +299,10 @@
     </div>
   </div>
 </header>
+
+<div class="gate" id="gate">
+  <div class="gate-card" id="gateCard"><p>Checking sign-in…</p></div>
+</div>
 
 <div id="app" class="hidden">
 <div class="wrap">
@@ -452,7 +467,6 @@ if (NOT_CONFIGURED) {
   $('#app').classList.add('hidden');
   $('#setup').classList.remove('hidden');
 } else {
-  $('#app').classList.remove('hidden');
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const fdb = getFirestore(app);
@@ -468,7 +482,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
 
   let roster=[], attendance={}, selDate=todayStr(), view='day';
   let weekStart=mondayOf(todayStr());
-  let unsubRoster=null, unsubAtt=null, unsubWeek=null;
+  let unsubRoster=null, unsubAtt=null, unsubWeek=null, unsubSettings=null;
   let weekData={}, prevWeights={}, editing=new Set();
   let canEdit=false, user=null;
   let profileOpenId=null, profileToken=0;
@@ -554,29 +568,60 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   const noteDoc = (wid)=> fb.doc(fdb,'privateNotes',wid);
 
   // ---- Auth ----
+  // Coaches only: nothing is read from Firestore until a listed coach is signed in.
+  let started=false;
   fb.onAuthStateChanged(auth, u=>{
     user=u;
     const email=(u&&u.email||'').toLowerCase();
-    const isCoach = !!u && (COACHES.length===0 || COACHES.includes(email));
+    const isCoach = !!u && COACHES.includes(email);
     canEdit = isCoach;
-    if(u && !isCoach) banner('Signed in as '+u.email+', but that account isn\u2019t on the coach list — you have view-only access. A listed coach can add it in the rules.');
     renderAuthBox(isCoach);
-    $('#viewBadge').classList.toggle('hidden', canEdit);
+    if(!isCoach){ stop(); renderGate(); return; }
+    $('#gate').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    $('#dateNav').classList.remove('hidden');
+    if(!started){ started=true; start(); }
+    $('#viewBadge').classList.add('hidden');
     $('#addBtn').disabled = !canEdit;
     $('#schedBtn').classList.toggle('hidden', !canEdit);
     watchNotes();
     if(view==='day') renderDaily(); else renderWeek();
     if(profileOpenId) renderProfile(profileOpenId); // refresh edit controls if open
   });
+  const LOCK_SVG='<svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+  function renderGate(){
+    $('#app').classList.add('hidden'); $('#dateNav').classList.add('hidden'); $('#gate').classList.remove('hidden');
+    const c=$('#gateCard');
+    if(user){
+      c.innerHTML=`${LOCK_SVG}<h2>Not authorized</h2><p>You’re signed in as <span class="who">${escapeHtml(user.email)}</span>, which isn’t on the coach list. Ask a coach to add this email, or sign in with a different account.</p><button class="gate-btn alt" id="gateOut">Sign out</button>`;
+      $('#gateOut').onclick=()=>fb.signOut(auth);
+    } else {
+      c.innerHTML=`${LOCK_SVG}<h2>Coaches only</h2><p>Sign in with your coach Google account to view attendance and weigh-ins.</p><button class="gate-btn" id="gateIn">Coach sign in</button>`;
+      $('#gateIn').onclick=openLogin;
+    }
+  }
+  // Tear down every listener and wipe data from memory and the page.
+  function stop(){
+    if(!started) return;
+    started=false;
+    [unsubRoster, unsubAtt, unsubSettings, unsubNotes].forEach(u=>{ if(u) u(); });
+    unsubRoster=unsubAtt=unsubSettings=unsubNotes=null;
+    if(unsubWeek){ unsubWeek.forEach(u=>u()); unsubWeek=null; }
+    roster=[]; attendance={}; weekData={}; prevWeights={}; notes={}; hydro={};
+    if(profileOpenId) closeProfile();
+    $('#schedScrim').classList.remove('open'); $('#scrim').classList.remove('open');
+    $('#roster').innerHTML=''; $('#weekTable').innerHTML='';
+    if(view!=='day') setView('day');
+  }
   function renderAuthBox(isCoach){
     const box=$('#authBox');
+    if(user && !isCoach){ box.innerHTML=''; return; }
     if(user){
       const tag = isCoach ? '' : ' (view only)';
       box.innerHTML = `<span class="who">${escapeHtml(user.email)}${tag}</span><button class="auth-btn" id="signout">Sign out</button>`;
       $('#signout').onclick=()=>fb.signOut(auth);
     } else {
-      box.innerHTML = `<button class="auth-btn" id="signin">Coach sign in</button>`;
-      $('#signin').onclick=openLogin;
+      box.innerHTML = '';
     }
   }
   async function openLogin(){
@@ -597,7 +642,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       if(view==='day') renderDaily(); else renderWeek();
       if(profileOpenId){ const w=roster.find(r=>r.id===profileOpenId); if(w) updateProfileHeader(w); }
     }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
-    fb.onSnapshot(settingsDoc(), snap=>{
+    unsubSettings = fb.onSnapshot(settingsDoc(), snap=>{
       const d=snap.exists()?snap.data():{};
       schedule={ practiceDays:Array.isArray(d.practiceDays)?d.practiceDays:[1,2,3,4,5], seasonStart:d.seasonStart||'', overrides:d.overrides||{} };
       renderDayTag(); if(view==='week') renderWeek();
@@ -617,6 +662,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
   function watchDate(){
     if(unsubAtt) unsubAtt();
+    unsubAtt=null; if(!started) return;
     attendance={};
     unsubAtt = fb.onSnapshot(attCol(selDate), snap=>{
       attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily();
@@ -787,6 +833,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   function watchWeek(){
     if(unsubWeek) unsubWeek.forEach(u=>u());
     unsubWeek=[]; weekData={};
+    if(!started) return;
     for(let i=0;i<7;i++){
       const dstr=addDays(weekStart,i);
       unsubWeek.push(fb.onSnapshot(attCol(dstr), snap=>{ const day={}; snap.docs.forEach(doc=>day[doc.id]=doc.data()); weekData[dstr]=day; if(view==='week') renderWeek(); }, ()=>{}));
@@ -1212,7 +1259,6 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
 
   syncDateInput();
-  start();
 }
 </script>
 </body>
