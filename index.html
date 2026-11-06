@@ -201,13 +201,31 @@
 
   /* ---- Weight vs class + flags ---- */
   .tgt.over { color:var(--ink); font-weight:500; } .tgt.ok { color:var(--present); font-weight:500; }
-  .wflag { font-size:11px; font-family:'Oswald',sans-serif; text-align:right; color:var(--flag); letter-spacing:.3px; margin-top:2px; cursor:help; }
-  .wflag:empty { display:none; }
   .wmgmt { background:var(--canvas); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin-bottom:20px; font-size:13.5px; }
   .wmgmt .wm-line b { font-family:'Oswald',sans-serif; font-weight:600; letter-spacing:.3px; }
-  .wm-flag { margin-top:9px; background:var(--flag-bg); color:var(--flag); border-radius:7px; padding:8px 11px; font-size:12.5px; font-weight:500; }
-  .wm-ok { margin-top:8px; color:var(--present); font-size:12.5px; }
   .wm-note { margin-top:9px; font-size:11.5px; color:var(--ink-soft); }
+  .wm-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .wm-stats .pn { font-family:'Oswald',sans-serif; font-size:21px; font-weight:600; line-height:1; }
+  .wm-stats .pl { font-size:10.5px; color:var(--ink-soft); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+  .tgt.below, .mn.below { color:var(--absent); font-weight:600; }
+  .mn.above { color:var(--ink-soft); }
+
+  /* ---- Hydration test ---- */
+  .hydro { background:var(--canvas); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin-bottom:20px; font-size:13.5px; }
+  .hydro .hline { margin-top:9px; }
+  .hydro .pass { color:var(--present); font-weight:600; } .hydro .fail { color:var(--absent); font-weight:600; }
+  .hydro .hbad { margin-top:9px; background:color-mix(in srgb,var(--absent) 10%,var(--card)); color:var(--absent); border-radius:7px; padding:8px 11px; font-size:12.5px; font-weight:500; }
+  .hydro details { margin-top:12px; border-top:1px solid var(--line); padding-top:10px; }
+  .hydro summary { cursor:pointer; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; color:var(--singlet); }
+  .hgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .hgrid .field { margin-bottom:0; }
+  .hgrid .full { grid-column:1 / -1; }
+  .hgrid .fhint { font-size:11px; color:var(--ink-soft); margin-top:3px; }
+  .hcalc { margin-top:10px; font-size:12.5px; color:var(--ink-soft); min-height:18px; }
+  .hactions { display:flex; gap:8px; margin-top:12px; align-items:center; }
+  .hactions button { padding:9px 15px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; cursor:pointer; }
+  .hactions .hsave { border:none; background:var(--singlet); color:#fff; } .hactions .hsave:hover { background:var(--singlet-deep); }
+  .hactions .hclear { border:1px solid var(--line); background:transparent; color:var(--ink); }
   .whistory td.wr { color:var(--ink-soft); font-size:12.5px; }
   .whistory td.wt { font-family:'Oswald',sans-serif; font-size:12px; width:70px; }
 
@@ -216,7 +234,6 @@
   .week-table th .thsub.warn { color:var(--flag); }
   .week-table th.offday, .week-table td.offday { opacity:.55; }
   .week-table td[title] { cursor:help; }
-  .wkflag { color:var(--flag); cursor:help; }
   .rate-cap { font-size:11.5px; color:var(--ink-soft); margin-top:10px; }
 
   /* ---- Schedule modal ---- */
@@ -239,7 +256,7 @@
     .row.head { display:none; }
     .status-group button { padding:8px 0; }
     .weigh-cell { flex-direction:row; align-items:center; gap:10px; flex-wrap:wrap; }
-    .wflag { width:100%; text-align:left; margin-top:0; }
+    .hgrid { grid-template-columns:1fr; }
     .weigh { flex:1; }
     .delta { margin-top:0; white-space:nowrap; }
     .del { justify-self:end; width:40px; }
@@ -412,13 +429,14 @@ const WEIGHT_CLASSES = ["106","113","120","126","132","138","144","150","157","1
 /* ============================================================ */
 
 /* ============================================================
-   WEIGHT FLAGS — when to show a check-in flag on a weigh-in.
-   WEEKLY_LOSS_LIMIT_PCT: NFHS guideline is no more than 1.5% of
-   body weight lost per week. SWING_ALERT_PCT: a single change
-   (up or down) vs. the previous weigh-in this big gets flagged.
+   HYDRATION / MINIMUM WEIGHT
+   HYDRATION_PASS_USG: urine specific gravity at or below this passes
+   (NFHS standard is 1.025; some states use 1.020).
+   MIN_BODY_FAT: lowest allowable body fat % used to calculate
+   minimum weight (NFHS: 7% boys, 12% girls).
    ============================================================ */
-const WEEKLY_LOSS_LIMIT_PCT = 1.5;
-const SWING_ALERT_PCT = 3;
+const HYDRATION_PASS_USG = 1.025;
+const MIN_BODY_FAT = { boys: 7, girls: 12 };
 
 /* Quick-pick suggestions for absence reasons (coaches can type anything). */
 const ABSENCE_REASONS = ["Sick","Injury","Family","Appointment","School / academic","College visit","Unknown"];
@@ -457,7 +475,8 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   let schedDraft=null;
   // Coach-only absence reasons: privateNotes/{wrestlerId} = { notes: { 'YYYY-MM-DD': 'Sick' } }
   let notes={}, unsubNotes=null, noteTimers={};
-  let prevHist={}, prevToken=0; // prior weigh-ins (asc) per wrestler for the selected date
+  let prevToken=0;
+  let hydro={}; // coach-only hydration test per wrestler (privateNotes/{id}.hydration)
 
   function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
   function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
@@ -481,19 +500,25 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     if(d<0) return {cls:'ok', txt:Math.abs(d)+' under'};
     return {cls:'ok', txt:'on weight'};
   }
-  // hist: earlier weigh-ins, oldest first, all before curDate. Returns check-in flags.
-  function weightFlags(hist, curW, curDate){
-    const out=[]; if(!validW(curW)||!hist.length) return out;
-    const from=addDays(curDate,-7), ref=hist.find(h=>h.date>=from);
-    if(ref){
-      const gap=daysBetween(ref.date,curDate), pct=(ref.weight-curW)/ref.weight*100;
-      if(gap>=3 && pct>WEEKLY_LOSS_LIMIT_PCT) out.push({kind:'rapid', short:'Down '+pct.toFixed(1)+'% in '+gap+' days',
-        long:'Down '+pct.toFixed(1)+'% ('+(+(ref.weight-curW).toFixed(1))+' lb) in '+gap+' days, faster than the '+WEEKLY_LOSS_LIMIT_PCT+'%-per-week guideline. Worth a check-in.'});
+  // ---- Hydration / minimum weight ----
+  const r1=v=>Math.round(v*10)/10;
+  function hydroSummary(h){
+    if(!h) return null;
+    const passed = validW(h.usg) ? h.usg<=HYDRATION_PASS_USG : null;
+    const minBF = validW(h.minBodyFat)?h.minBodyFat:MIN_BODY_FAT.boys;
+    let calc=null;
+    if(passed!==false && validW(h.testWeight) && validW(h.bodyFat)){
+      calc = h.bodyFat<=minBF ? h.testWeight : r1(h.testWeight*(1-h.bodyFat/100)/(1-minBF/100));
     }
-    const last=hist[hist.length-1], sw=+(curW-last.weight).toFixed(1), swPct=Math.abs(sw)/last.weight*100;
-    if(swPct>=SWING_ALERT_PCT) out.push({kind:'swing', short:(sw>0?'+':'−')+Math.abs(sw)+' lb swing',
-      long:'Big swing: '+(sw>0?'+':'−')+Math.abs(sw)+' lb ('+swPct.toFixed(1)+'%) since the '+medDate(last.date)+' weigh-in.'});
-    return out;
+    const min = validW(h.officialMin) ? h.officialMin : calc;
+    const nums=WCLASSES.map(Number).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+    const lowest = min!=null ? (nums.find(n=>n>=min) ?? null) : null;
+    return {passed, minBF, calc, min, lowest, official:validW(h.officialMin)};
+  }
+  function vsMin(w, cur){
+    const hs=hydroSummary(hydro[w&&w.id]); if(!hs||hs.min==null||!validW(cur)) return null;
+    const d=r1(cur-hs.min);
+    return d>=0 ? {cls:'above', txt:d+' above min'} : {cls:'below', txt:Math.abs(d)+' below min'};
   }
   // ---- Practice schedule ----
   function isPractice(d){
@@ -579,11 +604,12 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
   function watchNotes(){
     if(unsubNotes){ unsubNotes(); unsubNotes=null; }
-    notes={};
-    if(!canEdit){ patchNotes(); return; }
+    notes={}; hydro={};
+    if(!canEdit){ patchNotes(); updateDeltas(); return; }
     unsubNotes = fb.onSnapshot(fb.collection(fdb,'privateNotes'), snap=>{
-      notes={}; snap.docs.forEach(d=>notes[d.id]=(d.data().notes)||{});
-      patchNotes(); if(view==='week') renderWeek();
+      notes={}; hydro={};
+      snap.docs.forEach(d=>{ const x=d.data(); notes[d.id]=x.notes||{}; if(x.hydration) hydro[d.id]=x.hydration; });
+      patchNotes(); updateDeltas(); if(view==='week') renderWeek();
     }, err=>{ banner('Absence reasons can\u2019t load yet. Publish the updated Firestore rules (privateNotes) in the Firebase console.', true); });
   }
   function watchDate(){
@@ -595,7 +621,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     loadPrevWeights();
   }
   function loadPrevWeights(){
-    prevWeights={}; prevHist={};
+    prevWeights={};
     const myTok=++prevToken;
     const dates=[]; for(let i=1;i<=30;i++) dates.push(addDays(selDate,-i));
     const hist={}; let pending=dates.length;
@@ -604,7 +630,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
         snap.docs.forEach(doc=>{ const w=doc.data().weight; if(validW(w)) (hist[doc.id]=hist[doc.id]||[]).push({date:dstr,weight:w}); });
       }).catch(()=>{}).finally(()=>{ if(--pending===0 && myTok===prevToken){
         const pw={}; Object.keys(hist).forEach(id=>{ hist[id].sort((a,b)=>a.date<b.date?-1:1); pw[id]=hist[id][hist[id].length-1]; });
-        prevHist=hist; prevWeights=pw; if(view==='day') updateDeltas();
+        prevWeights=pw; if(view==='day') updateDeltas();
       } });
     });
   }
@@ -662,15 +688,16 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     if(diff===0) return {cls:'',txt:'no change'};
     return {cls:diff>0?'up':'down', txt:(diff>0?'▲':'▼')+' '+Math.abs(diff)+' lb'};
   }
-  function flagsFor(wid){ const rec=attendance[wid]||{}; return weightFlags(prevHist[wid]||[], rec.weight, selDate); }
   function updateDelta(wid){
     const el=document.querySelector('.delta[data-delta="'+wid+'"]'); if(!el) return;
     const d=deltaHtml(wid); el.className='delta '+d.cls; el.textContent=d.txt;
     const w=roster.find(r=>r.id===wid), rec=attendance[wid]||{};
     const tg=document.querySelector('[data-tgt="'+wid+'"]');
     if(tg){ const v=vsClass(w, rec.weight); tg.className='tgt '+(v?v.cls:''); tg.textContent=v?', '+v.txt:''; }
-    const fl=document.querySelector('[data-flag="'+wid+'"]');
-    if(fl){ const f=flagsFor(wid); fl.textContent=f.length?'⚠ '+f[0].short:''; fl.title=f.map(x=>x.long).join('\n'); }
+    const mn=document.querySelector('[data-min="'+wid+'"]');
+    if(mn){ const m=canEdit?vsMin(w, rec.weight):null; mn.className='mn '+(m?m.cls:''); mn.textContent=m?((w&&w.wclass)?', ':'')+m.txt:''; }
+    const line=document.querySelector('[data-cls="'+wid+'"]');
+    if(line) line.classList.toggle('hidden', !(w&&w.wclass) && !(mn&&mn.textContent));
   }
   function updateDeltas(){ roster.forEach(r=>updateDelta(r.id)); }
   function updateRowStatus(wid){
@@ -733,9 +760,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       const d=deltaHtml(r.id);
       const dis=canEdit?'':'disabled';
       rows+=`<div class="row" data-id="${r.id}">
-        <div class="wrestler clickable" data-profile="${r.id}" title="Open profile"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}<span class="chev">›</span></div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class<span class="tgt" data-tgt="${r.id}"></span></div>`:''}</div></div>
+        <div class="wrestler clickable" data-profile="${r.id}" title="Open profile"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}<span class="chev">›</span></div><div class="wclass ${r.wclass?'':'hidden'}" data-cls="${r.id}">${r.wclass?`${escapeHtml(r.wclass)} lb class<span class="tgt" data-tgt="${r.id}"></span>`:''}<span class="mn" data-min="${r.id}"></span></div></div></div>
         <div class="status-cell"><div class="status-group ${canEdit?'':'ro'}">${STATUSES.map(s=>`<button data-status="${s}" ${rec.status===s?`data-on="${s}"`:''} ${dis}>${s[0].toUpperCase()+s.slice(1)}</button>`).join('')}</div>${canEdit?`<input class="note-in ${locked?'':'hidden'}" data-note list="reasonList" maxlength="80" placeholder="Reason (coaches only)" value="${escapeHtml((notes[r.id]||{})[selDate]||'')}" aria-label="Absence reason for ${escapeHtml(r.name)}">`:''}</div>
-        <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div><div class="wflag" data-flag="${r.id}"></div></div>
+        <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div></div>
         <button class="del ${canEdit?'':'hidden'}" data-del title="Remove from roster">×</button>
       </div>`;
     });
@@ -793,13 +820,11 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       });
       const rt=rateFor(r, days, weekData);
       const rate=rt.pct==null?'—':rt.pct+'%';
-      let wc='—',wcls='',wflag='';
+      let wc='—',wcls='';
       if(first&&last&&first.weight!==last.weight){
         const diff=+(last.weight-first.weight).toFixed(1); wc=(diff>0?'+':'')+diff+' lb'; wcls=diff>0?'cell-a':'cell-p';
-        const pct=(first.weight-last.weight)/first.weight*100;
-        if(daysBetween(first.date,last.date)>=3 && pct>WEEKLY_LOSS_LIMIT_PCT) wflag=' <span class="wkflag" title="Down '+pct.toFixed(1)+'% this week, faster than the '+WEEKLY_LOSS_LIMIT_PCT+'%-per-week guideline">⚠</span>';
       } else if(first){ wc='steady'; }
-      body+=`<tr><td class="name clickable" data-profile="${r.id}">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate" title="${rt.attended} of ${rt.counted} counted practices">${rate}</td><td class="totcol ${wcls}">${wc}${wflag}</td></tr>`;
+      body+=`<tr><td class="name clickable" data-profile="${r.id}">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate" title="${rt.attended} of ${rt.counted} counted practices">${rate}</td><td class="totcol ${wcls}">${wc}</td></tr>`;
     });
     t.innerHTML=head+body;
     t.querySelectorAll('[data-profile]').forEach(td=>{ td.onclick=()=>openProfile(td.dataset.profile); });
@@ -899,24 +924,28 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     if(notTaken && !schedule.seasonStart && canEdit) cap+=` Set a season start under Schedule to skip preseason days.`;
     html+=`<div class="pchart-cap" style="margin:-10px 0 20px;text-align:left">${cap}</div>`;
 
-    // Weight management vs class
+    // Weight management: target vs actual
     const target=targetOf(w);
     const lastWi=weighins.length?weighins[weighins.length-1]:null;
-    const pflags=lastWi?weightFlags(weighins.slice(0,-1), lastWi.weight, lastWi.date):[];
-    if(target!=null || pflags.length){
-      html+=`<div class="psection-title">Weight management</div><div class="wmgmt">`;
-      if(target!=null && lastWi){
-        const v=vsClass(w,lastWi.weight);
-        html+=`<div class="wm-line">${lastWi.weight} lb on ${medDate(lastWi.date)}, <b style="color:${v.cls==='ok'?'var(--present)':'var(--ink)'}">${v.txt}</b> ${v.txt==='on weight'?'for':''} the ${target} lb class.</div>`.replace('  ',' ');
-      } else if(target!=null){
-        html+=`<div class="wm-line">${target} lb class. No weigh-ins yet.</div>`;
-      } else {
-        html+=`<div class="wm-line">No weight class set, so there’s nothing to compare against.</div>`;
+    if(target!=null){
+      const diff=lastWi?r1(lastWi.weight-target):null;
+      const dTxt=diff==null?'—':(diff>0?'+'+diff:diff)+' lb';
+      const dCol=diff==null?'inherit':(diff>0?'var(--ink)':'var(--present)');
+      html+=`<div class="psection-title">Weight vs. class</div><div class="wmgmt">
+        <div class="wm-stats">
+          <div><div class="pn">${target}</div><div class="pl">Target class</div></div>
+          <div><div class="pn">${lastWi?lastWi.weight:'—'}</div><div class="pl">Actual${lastWi?' ('+medDate(lastWi.date)+')':''}</div></div>
+          <div><div class="pn" style="color:${dCol}">${dTxt}</div><div class="pl">Difference</div></div>
+        </div>`;
+      if(weighins.length>=2){
+        const sd=r1(weighins[0].weight-target);
+        html+=`<div class="wm-note">Started the season ${sd>0?sd+' lb over':sd<0?Math.abs(sd)+' lb under':'on weight'} on ${medDate(weighins[0].date)}.</div>`;
       }
-      if(pflags.length) pflags.forEach(f=>{ html+=`<div class="wm-flag">⚠ ${escapeHtml(f.long)}</div>`; });
-      else if(lastWi && weighins.length>1) html+=`<div class="wm-ok">No weight flags on the latest weigh-in.</div>`;
-      html+=`<div class="wm-note">Flags follow the NFHS guideline of losing no more than ${WEEKLY_LOSS_LIMIT_PCT}% of body weight per week, plus any single change of ${SWING_ALERT_PCT}% or more. They’re prompts to check in, not medical advice.</div></div>`;
+      html+=`</div>`;
     }
+
+    // Hydration test & minimum weight (coach-only)
+    if(canEdit) html+=hydroSection(w, lastWi);
 
     // Weight trend
     html+=`<div class="psection-title">Weight trend</div>`;
@@ -959,6 +988,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     }
 
     body.innerHTML=html;
+    if(canEdit) wireHydro(wid);
 
     // Wire the weight-class editor
     if(canEdit){
@@ -974,6 +1004,74 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       saveBtn.onclick=doSave;
       if(custom) custom.onkeydown=e=>{ if(e.key==='Enter') doSave(); };
     }
+  }
+
+  function hydroSection(w, lastWi){
+    const h=hydro[w.id]||null, hs=hydroSummary(h);
+    let out=`<div class="psection-title">Hydration test &amp; minimum weight</div><div class="hydro">`;
+    if(!h){
+      out+=`<div>No hydration test recorded.</div>`;
+    } else {
+      const usgTxt = validW(h.usg) ? `USG ${h.usg.toFixed(3)} <span class="${hs.passed?'pass':'fail'}">${hs.passed?'pass':'fail'}</span>` : 'USG not entered';
+      out+=`<div>Tested ${h.date?medDate(h.date):'(no date)'}: ${usgTxt}${validW(h.testWeight)?', '+h.testWeight+' lb':''}${validW(h.bodyFat)?', '+h.bodyFat+'% body fat':''}.</div>`;
+      if(hs.passed===false){
+        out+=`<div class="hbad">Specific gravity is above ${HYDRATION_PASS_USG.toFixed(3)}. The body-fat test isn’t valid until the wrestler passes hydration, so no minimum weight is set. Record the retest here.</div>`;
+      } else if(hs.min!=null){
+        const cur=lastWi?lastWi.weight:null, margin=cur!=null?r1(cur-hs.min):null;
+        out+=`<div class="wm-stats" style="margin-top:12px">
+          <div><div class="pn">${hs.min}</div><div class="pl">Min weight${hs.official?' (official)':''}</div></div>
+          <div><div class="pn">${hs.lowest??'—'}</div><div class="pl">Lowest class</div></div>
+          <div><div class="pn" style="color:${margin!=null&&margin<0?'var(--absent)':'inherit'}">${margin==null?'—':Math.abs(margin)+' lb'}</div><div class="pl">${margin!=null&&margin<0?'Below min':'Above min'}</div></div>
+        </div>`;
+        const t=targetOf(w);
+        if(t!=null && hs.lowest!=null && t<hs.lowest) out+=`<div class="hbad">The ${t} lb class is below this wrestler’s lowest eligible class (${hs.lowest}).</div>`;
+        if(hs.official && hs.calc!=null && hs.calc!==hs.min) out+=`<div class="wm-note">Calculated from the test: ${hs.calc} lb. Using the official number you entered.</div>`;
+      } else {
+        out+=`<div class="hline" style="color:var(--ink-soft)">Add test weight and body fat (or the official minimum) to set a minimum weight.</div>`;
+      }
+    }
+    const v=k=>(h&&validW(h[k]))?h[k]:'';
+    const girls=h&&h.minBodyFat===MIN_BODY_FAT.girls;
+    out+=`<details ${h?'':'open'}><summary>${h?'Update test':'Record a test'}</summary>
+      <div class="hgrid">
+        <div class="field"><label>Test date</label><input type="date" id="hDate" value="${h&&h.date?h.date:todayStr()}"></div>
+        <div class="field"><label>Specific gravity</label><input type="number" id="hUsg" step="0.001" min="1" max="1.06" inputmode="decimal" placeholder="e.g. 1.018" value="${v('usg')}"><div class="fhint">Pass is ${HYDRATION_PASS_USG.toFixed(3)} or lower</div></div>
+        <div class="field"><label>Weight at test (lb)</label><input type="number" id="hWt" step="0.1" inputmode="decimal" value="${v('testWeight')}"></div>
+        <div class="field"><label>Body fat %</label><input type="number" id="hBf" step="0.1" inputmode="decimal" value="${v('bodyFat')}"></div>
+        <div class="field full"><label>Minimum body fat</label><select id="hMinBf"><option value="${MIN_BODY_FAT.boys}" ${girls?'':'selected'}>${MIN_BODY_FAT.boys}% (boys)</option><option value="${MIN_BODY_FAT.girls}" ${girls?'selected':''}>${MIN_BODY_FAT.girls}% (girls)</option></select></div>
+        <div class="field full"><label>Official min weight (optional)</label><input type="number" id="hOff" step="0.1" inputmode="decimal" placeholder="From your state’s weight management system" value="${v('officialMin')}"><div class="fhint">If entered, this overrides the calculated number.</div></div>
+      </div>
+      <div class="hcalc" id="hCalc"></div>
+      <div class="hactions"><button class="hsave" id="hSave">Save test</button>${h?'<button class="hclear" id="hClear">Clear</button>':''}</div>
+    </details>`;
+    out+=`<div class="wm-note">Coaches only. Minimum weight = lean mass ÷ (1 − minimum body fat). Your state’s official number is authoritative.</div></div>`;
+    return out;
+  }
+  function readHydroForm(){
+    const n=id=>{ const x=parseFloat($(id).value); return isNaN(x)?null:x; };
+    return { date:$('#hDate').value||'', usg:n('#hUsg'), testWeight:n('#hWt'), bodyFat:n('#hBf'), minBodyFat:n('#hMinBf'), officialMin:n('#hOff'), updated:Date.now() };
+  }
+  function wireHydro(wid){
+    if(!$('#hSave')) return;
+    const calc=()=>{
+      const hs=hydroSummary(readHydroForm());
+      $('#hCalc').textContent = hs.passed===false ? 'Fails hydration, so no minimum weight is set.'
+        : hs.min!=null ? `Minimum weight ${hs.min} lb${hs.official?' (official)':''}, lowest class ${hs.lowest??'none in list'}.` : '';
+    };
+    ['#hUsg','#hWt','#hBf','#hMinBf','#hOff'].forEach(id=>$(id).oninput=calc); calc();
+    $('#hSave').onclick=async()=>{
+      const rec=readHydroForm();
+      if(rec.usg!=null && (rec.usg<1 || rec.usg>1.06)){ banner('Specific gravity should look like 1.018.', true); return; }
+      $('#hSave').disabled=true;
+      try{ await fb.setDoc(noteDoc(wid), {hydration:rec}, {merge:true}); hydro[wid]=rec; renderProfile(wid); updateDeltas(); }
+      catch(e){ banner('Could not save the hydration test. Check that the Firestore rules for privateNotes are published.', true); $('#hSave').disabled=false; }
+    };
+    const clr=$('#hClear');
+    if(clr) clr.onclick=async()=>{
+      if(!confirm('Clear this wrestler’s hydration test?')) return;
+      try{ await fb.setDoc(noteDoc(wid), {hydration:fb.deleteField()}, {merge:true}); delete hydro[wid]; renderProfile(wid); updateDeltas(); }
+      catch(e){ banner('Could not clear the hydration test.', true); }
+    };
   }
 
   // Simple inline SVG sparkline for weight over time.
@@ -1002,15 +1100,15 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
 
   function exportDayCSV(){
-    const hdr=['Date','Practice Day','Wrestler','Weight Class','Status','Weight (lb)','Change vs Last','Vs Class','Weight Flag'];
-    if(canEdit) hdr.push('Absence Reason');
+    const hdr=['Date','Practice Day','Wrestler','Weight Class','Status','Weight (lb)','Change vs Last','Vs Class'];
+    if(canEdit) hdr.push('Min Weight','Vs Min','Absence Reason');
     const rows=[hdr];
     roster.forEach(r=>{
       const rec=attendance[r.id]||{}, prev=prevWeights[r.id]; let chg='';
       if(validW(rec.weight)&&prev){const d=+(rec.weight-prev.weight).toFixed(1); chg=(d>0?'+':'')+d;}
-      const v=vsClass(r,rec.weight), fl=flagsFor(r.id).map(f=>f.short).join('; ');
-      const line=[selDate,isPractice(selDate)?'yes':'no',r.name,r.wclass||'',rec.status||'',validW(rec.weight)?rec.weight:'',chg,v?v.txt:'',fl];
-      if(canEdit) line.push((notes[r.id]||{})[selDate]||'');
+      const v=vsClass(r,rec.weight);
+      const line=[selDate,isPractice(selDate)?'yes':'no',r.name,r.wclass||'',rec.status||'',validW(rec.weight)?rec.weight:'',chg,v?v.txt:''];
+      if(canEdit){ const hs=hydroSummary(hydro[r.id]), m=vsMin(r,rec.weight); line.push(hs&&hs.min!=null?hs.min:'', m?m.txt:'', (notes[r.id]||{})[selDate]||''); }
       rows.push(line);
     });
     downloadCSV(rows,'attendance_'+selDate+'.csv');
