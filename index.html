@@ -13,16 +13,19 @@
     --canvas: #f5f2ec; --card: #ffffff; --ink: #14181d; --ink-soft: #5a6572; --line: #e2ddd3;
     --whistle: #e8a72e; --present: #2f9e6b; --absent: #c0392b; --excused: #d98c1f;
     --shadow: 0 1px 3px rgba(20,24,29,.08), 0 1px 2px rgba(20,24,29,.04);
+    --flag: #a35c00; --flag-bg: #fdf1dc;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --canvas: #10161d; --card: #1a232d; --ink: #eef1f4; --ink-soft: #93a1b0;
       --line: #2a3744; --mat: #0b1219; --mat-line: #24323f; --shadow: 0 1px 3px rgba(0,0,0,.4);
+      --flag: #f0b54a; --flag-bg: #2e2414;
     }
   }
   :root[data-theme="dark"] {
     --canvas: #10161d; --card: #1a232d; --ink: #eef1f4; --ink-soft: #93a1b0;
     --line: #2a3744; --mat: #0b1219; --mat-line: #24323f; --shadow: 0 1px 3px rgba(0,0,0,.4);
+    --flag: #f0b54a; --flag-bg: #2e2414;
   }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--canvas); color:var(--ink); font-family:'Inter',system-ui,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
@@ -181,12 +184,62 @@
   .pedit .savedtag { font-size:12px; color:var(--present); font-weight:600; margin-left:4px; opacity:0; transition:opacity .2s; }
   .pedit .savedtag.show { opacity:1; }
 
+  /* ---- Practice-day tag (Daily) ---- */
+  .daytag { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft); margin:4px 0 2px; min-height:20px; }
+  .daytag .pill { display:inline-flex; align-items:center; gap:7px; font-weight:600; color:var(--ink); }
+  .daytag .pill::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--present); }
+  .daytag.off .pill::before { background:var(--ink-soft); opacity:.55; }
+  .linkbtn { background:none; border:none; padding:0; color:var(--singlet); font:inherit; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+  .linkbtn:hover { color:var(--singlet-deep); }
+  .tab-side { margin-left:auto; align-self:center; padding:7px 13px; }
+
+  /* ---- Absence reason (Daily) ---- */
+  .status-cell { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .note-in { width:100%; border:1px dashed var(--line); background:transparent; color:var(--ink); border-radius:7px; padding:5px 9px; font-size:12.5px; font-family:'Inter',sans-serif; outline:none; }
+  .note-in:focus { border-style:solid; border-color:var(--excused); }
+  .note-in::placeholder { color:var(--ink-soft); }
+
+  /* ---- Weight vs class + flags ---- */
+  .tgt.over { color:var(--ink); font-weight:500; } .tgt.ok { color:var(--present); font-weight:500; }
+  .wflag { font-size:11px; font-family:'Oswald',sans-serif; text-align:right; color:var(--flag); letter-spacing:.3px; margin-top:2px; cursor:help; }
+  .wflag:empty { display:none; }
+  .wmgmt { background:var(--canvas); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin-bottom:20px; font-size:13.5px; }
+  .wmgmt .wm-line b { font-family:'Oswald',sans-serif; font-weight:600; letter-spacing:.3px; }
+  .wm-flag { margin-top:9px; background:var(--flag-bg); color:var(--flag); border-radius:7px; padding:8px 11px; font-size:12.5px; font-weight:500; }
+  .wm-ok { margin-top:8px; color:var(--present); font-size:12.5px; }
+  .wm-note { margin-top:9px; font-size:11.5px; color:var(--ink-soft); }
+  .whistory td.wr { color:var(--ink-soft); font-size:12.5px; }
+  .whistory td.wt { font-family:'Oswald',sans-serif; font-size:12px; width:70px; }
+
+  /* ---- Weekly grid additions ---- */
+  .week-table th .thsub { display:block; font-family:'Inter',sans-serif; font-size:10px; text-transform:none; letter-spacing:0; font-weight:500; }
+  .week-table th .thsub.warn { color:var(--flag); }
+  .week-table th.offday, .week-table td.offday { opacity:.55; }
+  .week-table td[title] { cursor:help; }
+  .wkflag { color:var(--flag); cursor:help; }
+  .rate-cap { font-size:11.5px; color:var(--ink-soft); margin-top:10px; }
+
+  /* ---- Schedule modal ---- */
+  .sched-modal { max-width:430px; max-height:90vh; overflow-y:auto; }
+  .dow-group { display:flex; gap:5px; }
+  .dow-group button { flex:1; border:1px solid var(--line); background:transparent; color:var(--ink-soft); padding:8px 0; border-radius:7px; cursor:pointer; font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.3px; }
+  .dow-group button[aria-pressed="true"] { background:var(--mat); border-color:var(--mat); color:#f5f2ec; }
+  :root[data-theme="dark"] .dow-group button[aria-pressed="true"] { background:var(--singlet); border-color:var(--singlet); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dow-group button[aria-pressed="true"] { background:var(--singlet); border-color:var(--singlet); } }
+  .ovlist { border:1px solid var(--line); border-radius:8px; max-height:170px; overflow-y:auto; }
+  .ovrow { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px; border-bottom:1px solid var(--line); font-size:13px; }
+  .ovrow:last-child { border-bottom:none; }
+  .ovrow .ovk { font-size:11.5px; font-weight:600; }
+  .ovrow .ovk.add { color:var(--present); } .ovrow .ovk.cancel { color:var(--absent); }
+  .ovempty { padding:12px; font-size:12.5px; color:var(--ink-soft); }
+
   @media (max-width:720px) {
     .scoreboard { grid-template-columns:repeat(2,1fr); }
     .row { grid-template-columns:1fr; gap:10px; padding:14px 14px; }
     .row.head { display:none; }
     .status-group button { padding:8px 0; }
-    .weigh-cell { flex-direction:row; align-items:center; gap:10px; }
+    .weigh-cell { flex-direction:row; align-items:center; gap:10px; flex-wrap:wrap; }
+    .wflag { width:100%; text-align:left; margin-top:0; }
     .weigh { flex:1; }
     .delta { margin-top:0; white-space:nowrap; }
     .del { justify-self:end; width:40px; }
@@ -228,6 +281,7 @@
       <svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       View only — sign in to edit
     </div>
+    <button class="ghost-btn tab-side hidden" id="schedBtn">Schedule</button>
   </div>
 
   <div id="dailyView">
@@ -240,6 +294,7 @@
     <div class="toolbar">
       <div>
         <h2 id="dayTitle">Practice Roster</h2>
+        <div class="daytag" id="dayTag"></div>
         <div class="hint">Tap a status, then enter weigh-in. Tap a name to open their profile.</div>
       </div>
       <div class="btn-row">
@@ -261,6 +316,7 @@
       <button class="ghost-btn" id="exportWeek">Export CSV</button>
     </div>
     <div class="week-scroll"><table class="week-table" id="weekTable"></table></div>
+    <div class="rate-cap">Att. Rate counts scheduled practices where attendance was taken. Unmarked counts as missed; excused doesn’t count against a wrestler.</div>
   </div>
 
   <div class="foot"><span class="dot" id="syncDot"></span><span id="syncText">Connecting…</span></div>
@@ -284,6 +340,19 @@
   </div>
 </div>
 
+<div class="scrim" id="schedScrim">
+  <div class="modal sched-modal">
+    <h3>Practice schedule</h3>
+    <p class="msub">Attendance rates count only these days. To cancel or add a single date, use the link under the date on the Daily tab.</p>
+    <div class="field"><label>Regular practice days</label><div class="dow-group" id="dowGroup"></div></div>
+    <div class="field"><label for="seasonStart">Season start</label><input type="date" id="seasonStart"></div>
+    <div class="field"><label>One-off changes</label><div class="ovlist" id="ovList"></div></div>
+    <div class="modal-actions"><button class="btn-cancel" id="schedCancel">Close</button><button class="btn-save" id="schedSave">Save schedule</button></div>
+  </div>
+</div>
+
+<datalist id="reasonList"></datalist>
+
 <div class="scrim" id="profileScrim">
   <div class="modal profile-modal">
     <div class="profile-head">
@@ -301,7 +370,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot }
+import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, deleteField }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ============================================================
@@ -342,6 +411,19 @@ const COACH_EMAILS = [
 const WEIGHT_CLASSES = ["106","113","120","126","132","138","144","150","157","165","175","190","215","285"];
 /* ============================================================ */
 
+/* ============================================================
+   WEIGHT FLAGS — when to show a check-in flag on a weigh-in.
+   WEEKLY_LOSS_LIMIT_PCT: NFHS guideline is no more than 1.5% of
+   body weight lost per week. SWING_ALERT_PCT: a single change
+   (up or down) vs. the previous weigh-in this big gets flagged.
+   ============================================================ */
+const WEEKLY_LOSS_LIMIT_PCT = 1.5;
+const SWING_ALERT_PCT = 3;
+
+/* Quick-pick suggestions for absence reasons (coaches can type anything). */
+const ABSENCE_REASONS = ["Sick","Injury","Family","Appointment","School / academic","College visit","Unknown"];
+/* ============================================================ */
+
 const NOT_CONFIGURED = firebaseConfig.apiKey === "PASTE_API_KEY";
 
 const $ = s => document.querySelector(s);
@@ -353,7 +435,7 @@ if (NOT_CONFIGURED) {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const fdb = getFirestore(app);
-  startApp(auth, fdb, { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }, COACH_EMAILS, WEIGHT_CLASSES);
+  startApp(auth, fdb, { collection, doc, setDoc, updateDoc, deleteDoc, getDocs, onSnapshot, deleteField, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut }, COACH_EMAILS, WEIGHT_CLASSES);
 }
 
 function startApp(auth, fdb, fb, coachEmails, weightClasses){
@@ -369,6 +451,13 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   let weekData={}, prevWeights={}, editing=new Set();
   let canEdit=false, user=null;
   let profileOpenId=null, profileToken=0;
+  // Practice schedule (settings/team). Defaults apply until the doc exists.
+  // practiceDays uses JS getDay() numbers: 0=Sun ... 6=Sat.
+  let schedule={practiceDays:[1,2,3,4,5], seasonStart:'', overrides:{}};
+  let schedDraft=null;
+  // Coach-only absence reasons: privateNotes/{wrestlerId} = { notes: { 'YYYY-MM-DD': 'Sick' } }
+  let notes={}, unsubNotes=null, noteTimers={};
+  let prevHist={}, prevToken=0; // prior weigh-ins (asc) per wrestler for the selected date
 
   function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
   function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
@@ -381,12 +470,60 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   function mondayOf(s){ const dt=parseLocal(s); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); return fmtDate(dt); }
   function addDays(s,n){ const dt=parseLocal(s); dt.setDate(dt.getDate()+n); return fmtDate(dt); }
   function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function daysBetween(a,b){ return Math.round((parseLocal(b)-parseLocal(a))/86400000); }
+  function createdStr(w){ return (w&&w.created)?fmtDate(new Date(w.created)):''; }
+  function validW(v){ return v!=null && !isNaN(v); }
+  function targetOf(w){ const t=parseFloat(w&&w.wclass); return isNaN(t)?null:t; }
+  function vsClass(w, cur){
+    const t=targetOf(w); if(t==null||!validW(cur)) return null;
+    const d=+(cur-t).toFixed(1);
+    if(d>0) return {cls:'over', txt:d+' over'};
+    if(d<0) return {cls:'ok', txt:Math.abs(d)+' under'};
+    return {cls:'ok', txt:'on weight'};
+  }
+  // hist: earlier weigh-ins, oldest first, all before curDate. Returns check-in flags.
+  function weightFlags(hist, curW, curDate){
+    const out=[]; if(!validW(curW)||!hist.length) return out;
+    const from=addDays(curDate,-7), ref=hist.find(h=>h.date>=from);
+    if(ref){
+      const gap=daysBetween(ref.date,curDate), pct=(ref.weight-curW)/ref.weight*100;
+      if(gap>=3 && pct>WEEKLY_LOSS_LIMIT_PCT) out.push({kind:'rapid', short:'Down '+pct.toFixed(1)+'% in '+gap+' days',
+        long:'Down '+pct.toFixed(1)+'% ('+(+(ref.weight-curW).toFixed(1))+' lb) in '+gap+' days, faster than the '+WEEKLY_LOSS_LIMIT_PCT+'%-per-week guideline. Worth a check-in.'});
+    }
+    const last=hist[hist.length-1], sw=+(curW-last.weight).toFixed(1), swPct=Math.abs(sw)/last.weight*100;
+    if(swPct>=SWING_ALERT_PCT) out.push({kind:'swing', short:(sw>0?'+':'−')+Math.abs(sw)+' lb swing',
+      long:'Big swing: '+(sw>0?'+':'−')+Math.abs(sw)+' lb ('+swPct.toFixed(1)+'%) since the '+medDate(last.date)+' weigh-in.'});
+    return out;
+  }
+  // ---- Practice schedule ----
+  function isPractice(d){
+    const o=schedule.overrides[d];
+    if(o===true||o===false) return o;
+    return schedule.practiceDays.includes(parseLocal(d).getDay());
+  }
+  // Attendance rate for one wrestler over a set of days.
+  // Counts scheduled practice days (up to today, since season start / when they joined)
+  // on which attendance was taken for anyone. Excused days are left out; unmarked = missed.
+  function rateFor(w, days, dataByDay){
+    const today=todayStr(), cs=createdStr(w); let attended=0, counted=0, unmarked=0;
+    days.forEach(d=>{
+      if(d>today || !isPractice(d)) return;
+      if(cs && d<cs) return; if(schedule.seasonStart && d<schedule.seasonStart) return;
+      const day=dataByDay[d]||{}; if(!Object.values(day).some(x=>x&&x.status)) return;
+      const st=(day[w.id]||{}).status;
+      if(st==='excused') return;
+      counted++; if(st==='present') attended++; else if(!st) unmarked++;
+    });
+    return {attended, counted, unmarked, pct: counted?Math.round(attended/counted*100):null};
+  }
   function banner(msg, isErr){ const b=$('#banner'); b.textContent=msg; b.className='banner show'+(isErr?' err':''); clearTimeout(banner._t); banner._t=setTimeout(()=>b.classList.remove('show'),5000); }
 
   // ---- Firestore path helpers ----
   const rosterCol = ()=> fb.collection(fdb,'roster');
   const attCol = (d)=> fb.collection(fdb,'attendance',d,'wrestlers');
   const attDoc = (d,wid)=> fb.doc(fdb,'attendance',d,'wrestlers',wid);
+  const settingsDoc = ()=> fb.doc(fdb,'settings','team');
+  const noteDoc = (wid)=> fb.doc(fdb,'privateNotes',wid);
 
   // ---- Auth ----
   fb.onAuthStateChanged(auth, u=>{
@@ -398,6 +535,8 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     renderAuthBox(isCoach);
     $('#viewBadge').classList.toggle('hidden', canEdit);
     $('#addBtn').disabled = !canEdit;
+    $('#schedBtn').classList.toggle('hidden', !canEdit);
+    watchNotes();
     if(view==='day') renderDaily(); else renderWeek();
     if(profileOpenId) renderProfile(profileOpenId); // refresh edit controls if open
   });
@@ -430,24 +569,43 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       if(view==='day') renderDaily(); else renderWeek();
       if(profileOpenId){ const w=roster.find(r=>r.id===profileOpenId); if(w) updateProfileHeader(w); }
     }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
+    fb.onSnapshot(settingsDoc(), snap=>{
+      const d=snap.exists()?snap.data():{};
+      schedule={ practiceDays:Array.isArray(d.practiceDays)?d.practiceDays:[1,2,3,4,5], seasonStart:d.seasonStart||'', overrides:d.overrides||{} };
+      renderDayTag(); if(view==='week') renderWeek();
+      if($('#schedScrim').classList.contains('open')) renderOverrides();
+    }, err=>{ console.warn('Schedule not readable — publish the updated Firestore rules (settings).', err.code); renderDayTag(); });
     watchDate();
+  }
+  function watchNotes(){
+    if(unsubNotes){ unsubNotes(); unsubNotes=null; }
+    notes={};
+    if(!canEdit){ patchNotes(); return; }
+    unsubNotes = fb.onSnapshot(fb.collection(fdb,'privateNotes'), snap=>{
+      notes={}; snap.docs.forEach(d=>notes[d.id]=(d.data().notes)||{});
+      patchNotes(); if(view==='week') renderWeek();
+    }, err=>{ banner('Absence reasons can\u2019t load yet. Publish the updated Firestore rules (privateNotes) in the Firebase console.', true); });
   }
   function watchDate(){
     if(unsubAtt) unsubAtt();
     attendance={};
     unsubAtt = fb.onSnapshot(attCol(selDate), snap=>{
-      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); renderDaily();
+      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily();
     }, ()=>{});
     loadPrevWeights();
   }
   function loadPrevWeights(){
-    prevWeights={};
+    prevWeights={}; prevHist={};
+    const myTok=++prevToken;
     const dates=[]; for(let i=1;i<=30;i++) dates.push(addDays(selDate,-i));
-    const found={}; let pending=dates.length;
+    const hist={}; let pending=dates.length;
     dates.forEach(dstr=>{
       fb.getDocs(attCol(dstr)).then(snap=>{
-        snap.docs.forEach(doc=>{ const w=doc.data().weight; if(w!=null&&!isNaN(w)){ const cur=found[doc.id]; if(!cur||dstr>cur.date) found[doc.id]={date:dstr,weight:w}; } });
-      }).catch(()=>{}).finally(()=>{ if(--pending===0){ prevWeights=found; if(view==='day') updateDeltas(); } });
+        snap.docs.forEach(doc=>{ const w=doc.data().weight; if(validW(w)) (hist[doc.id]=hist[doc.id]||[]).push({date:dstr,weight:w}); });
+      }).catch(()=>{}).finally(()=>{ if(--pending===0 && myTok===prevToken){
+        const pw={}; Object.keys(hist).forEach(id=>{ hist[id].sort((a,b)=>a.date<b.date?-1:1); pw[id]=hist[id][hist[id].length-1]; });
+        prevHist=hist; prevWeights=pw; if(view==='day') updateDeltas();
+      } });
     });
   }
 
@@ -457,6 +615,24 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const cur=attendance[wid]||{}; const next=cur.status===status?{...cur,status:null}:{...cur,status};
     attendance[wid]=next; updateRowStatus(wid); updateCounts();
     fb.setDoc(attDoc(selDate,wid), next, {merge:false}).catch(()=>banner('Could not save — are you still signed in?',true));
+    if(next.status!=='absent' && next.status!=='excused' && (notes[wid]||{})[selDate]){
+      const ni=document.querySelector('.row[data-id="'+wid+'"] [data-note]'); if(ni) ni.value='';
+      setNote(wid,'',true);
+    }
+  }
+  function setNote(wid,val,now){
+    if(!canEdit) return;
+    const d=selDate, v=(val||'').trim();
+    notes[wid]={...(notes[wid]||{})}; if(v) notes[wid][d]=v; else delete notes[wid][d];
+    clearTimeout(noteTimers[wid]);
+    const write=()=>fb.setDoc(noteDoc(wid), {notes:{[d]: v?v:fb.deleteField()}}, {merge:true})
+      .catch(()=>banner('Could not save the absence reason. Check that the updated Firestore rules are published.',true));
+    if(now) write(); else noteTimers[wid]=setTimeout(write,600);
+  }
+  function setOverride(d,val){
+    if(!canEdit) return;
+    fb.setDoc(settingsDoc(), {overrides:{[d]: val===null?fb.deleteField():val}}, {merge:true})
+      .catch(()=>banner('Could not save the schedule. Check that the updated Firestore rules are published.',true));
   }
   let weightTimers={};
   function setWeight(wid,val){
@@ -486,17 +662,64 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     if(diff===0) return {cls:'',txt:'no change'};
     return {cls:diff>0?'up':'down', txt:(diff>0?'▲':'▼')+' '+Math.abs(diff)+' lb'};
   }
-  function updateDelta(wid){ const el=document.querySelector('.delta[data-delta="'+wid+'"]'); if(!el) return; const d=deltaHtml(wid); el.className='delta '+d.cls; el.textContent=d.txt; }
+  function flagsFor(wid){ const rec=attendance[wid]||{}; return weightFlags(prevHist[wid]||[], rec.weight, selDate); }
+  function updateDelta(wid){
+    const el=document.querySelector('.delta[data-delta="'+wid+'"]'); if(!el) return;
+    const d=deltaHtml(wid); el.className='delta '+d.cls; el.textContent=d.txt;
+    const w=roster.find(r=>r.id===wid), rec=attendance[wid]||{};
+    const tg=document.querySelector('[data-tgt="'+wid+'"]');
+    if(tg){ const v=vsClass(w, rec.weight); tg.className='tgt '+(v?v.cls:''); tg.textContent=v?', '+v.txt:''; }
+    const fl=document.querySelector('[data-flag="'+wid+'"]');
+    if(fl){ const f=flagsFor(wid); fl.textContent=f.length?'⚠ '+f[0].short:''; fl.title=f.map(x=>x.long).join('\n'); }
+  }
   function updateDeltas(){ roster.forEach(r=>updateDelta(r.id)); }
   function updateRowStatus(wid){
     const row=document.querySelector('.row[data-id="'+wid+'"]'); if(!row) return;
     const rec=attendance[wid]||{};
     row.querySelectorAll('[data-status]').forEach(btn=>{ if(rec.status===btn.dataset.status) btn.setAttribute('data-on',btn.dataset.status); else btn.removeAttribute('data-on'); });
-    row.querySelector('.weigh').classList.toggle('locked', rec.status==='absent'||rec.status==='excused');
+    const off=rec.status==='absent'||rec.status==='excused';
+    row.querySelector('.weigh').classList.toggle('locked', off);
+    const ni=row.querySelector('[data-note]'); if(ni) ni.classList.toggle('hidden', !(canEdit && off));
+  }
+  function patchNotes(){
+    document.querySelectorAll('.row[data-id]').forEach(row=>{
+      const id=row.dataset.id, ni=row.querySelector('[data-note]'); if(!ni) return;
+      if(!editing.has('n:'+id)) ni.value=(notes[id]||{})[selDate]||'';
+      updateRowStatus(id);
+    });
+  }
+  // Surgical update after an attendance snapshot: never rebuild rows, never touch a focused input.
+  function patchDaily(){
+    if(roster.length===0) return renderDaily();
+    for(const r of roster){ if(!document.querySelector('.row[data-id="'+r.id+'"]')) return renderDaily(); }
+    roster.forEach(r=>{
+      const row=document.querySelector('.row[data-id="'+r.id+'"]');
+      updateRowStatus(r.id);
+      const wi=row.querySelector('[data-weight]');
+      if(wi && !editing.has(r.id)){ const rec=attendance[r.id]||{}; const v=validW(rec.weight)?String(rec.weight):''; if(wi.value!==v) wi.value=v; }
+      updateDelta(r.id);
+    });
+    updateCounts();
+  }
+  function renderDayTag(){
+    const el=$('#dayTag'); if(!el) return;
+    const p=isPractice(selDate), ov=Object.prototype.hasOwnProperty.call(schedule.overrides,selDate);
+    const label = p ? (ov?'Added practice day':'Practice day') : (ov?'Practice cancelled':'No practice scheduled');
+    let html=`<span class="pill">${label}</span>`;
+    if(!p) html+=`<span>Attendance on this day won’t count toward rates.</span>`;
+    if(canEdit){
+      if(ov) html+=`<button class="linkbtn" data-ov="reset">Undo, use regular schedule</button>`;
+      else if(p) html+=`<button class="linkbtn" data-ov="cancel">Cancel this practice</button>`;
+      else html+=`<button class="linkbtn" data-ov="add">Make this a practice day</button>`;
+    }
+    el.className='daytag'+(p?'':' off'); el.innerHTML=html;
+    const b=el.querySelector('[data-ov]');
+    if(b) b.onclick=()=>{ const k=b.dataset.ov; setOverride(selDate, k==='reset'?null:(k==='add')); };
   }
 
   function renderDaily(){
     $('#dayTitle').textContent=prettyDate(selDate);
+    renderDayTag();
     const el=$('#roster');
     if(roster.length===0){
       el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="7" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M17 11h5M19.5 8.5v5"/></svg><p>No wrestlers yet.</p>${canEdit?'<p style="font-size:12.5px">Add your team with the button above.</p>':'<p style="font-size:12.5px">A coach can sign in to add the roster.</p>'}</div>`;
@@ -510,9 +733,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       const d=deltaHtml(r.id);
       const dis=canEdit?'':'disabled';
       rows+=`<div class="row" data-id="${r.id}">
-        <div class="wrestler clickable" data-profile="${r.id}" title="Open profile"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}<span class="chev">›</span></div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class</div>`:''}</div></div>
-        <div class="status-group ${canEdit?'':'ro'}">${STATUSES.map(s=>`<button data-status="${s}" ${rec.status===s?`data-on="${s}"`:''} ${dis}>${s[0].toUpperCase()+s.slice(1)}</button>`).join('')}</div>
-        <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div></div>
+        <div class="wrestler clickable" data-profile="${r.id}" title="Open profile"><div class="avatar" style="background:${col}">${initials(r.name)}</div><div style="min-width:0"><div class="wname">${escapeHtml(r.name)}<span class="chev">›</span></div>${r.wclass?`<div class="wclass">${escapeHtml(r.wclass)} lb class<span class="tgt" data-tgt="${r.id}"></span></div>`:''}</div></div>
+        <div class="status-cell"><div class="status-group ${canEdit?'':'ro'}">${STATUSES.map(s=>`<button data-status="${s}" ${rec.status===s?`data-on="${s}"`:''} ${dis}>${s[0].toUpperCase()+s.slice(1)}</button>`).join('')}</div>${canEdit?`<input class="note-in ${locked?'':'hidden'}" data-note list="reasonList" maxlength="80" placeholder="Reason (coaches only)" value="${escapeHtml((notes[r.id]||{})[selDate]||'')}" aria-label="Absence reason for ${escapeHtml(r.name)}">`:''}</div>
+        <div class="weigh-cell"><div class="weigh ${locked?'locked':''}"><input type="number" inputmode="decimal" step="0.1" placeholder="—" value="${wval}" data-weight ${dis} aria-label="Weight for ${escapeHtml(r.name)}"><span class="u">lb</span></div><div class="delta ${d.cls}" data-delta="${r.id}">${d.txt}</div><div class="wflag" data-flag="${r.id}"></div></div>
         <button class="del ${canEdit?'':'hidden'}" data-del title="Remove from roster">×</button>
       </div>`;
     });
@@ -522,11 +745,13 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       row.querySelectorAll('[data-status]').forEach(btn=>{ btn.onclick=()=>setStatus(id,btn.dataset.status); });
       const wi=row.querySelector('[data-weight]');
       if(wi){ wi.oninput=()=>setWeight(id,wi.value); wi.onfocus=()=>editing.add(id); wi.onblur=()=>editing.delete(id); }
+      const ni=row.querySelector('[data-note]');
+      if(ni){ ni.oninput=()=>setNote(id,ni.value); ni.onfocus=()=>editing.add('n:'+id); ni.onblur=()=>{ editing.delete('n:'+id); }; }
       const name=roster.find(r=>r.id===id)?.name||'';
       const del=row.querySelector('[data-del]'); if(del) del.onclick=()=>removeWrestler(id,name);
       const prof=row.querySelector('[data-profile]'); if(prof) prof.onclick=()=>openProfile(id);
     });
-    updateCounts();
+    updateDeltas(); updateCounts(); renderDayTag();
   }
 
   function watchWeek(){
@@ -542,28 +767,39 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     $('#weekRange').textContent=shortDate(weekStart)+' – '+shortDate(days[6]);
     const t=$('#weekTable');
     if(roster.length===0){ t.innerHTML='<tr><td style="padding:40px" class="cell-x">No wrestlers on the roster yet.</td></tr>'; return; }
-    const activeDays=days.filter(d=>weekData[d]&&Object.values(weekData[d]).some(r=>r.status||r.weight!=null));
-    const showDays=activeDays.length?activeDays:days.filter(d=>{const dow=parseLocal(d).getDay();return dow>=1&&dow<=5;});
+    const today=todayStr();
+    const hasData=d=>weekData[d]&&Object.values(weekData[d]).some(r=>r.status||validW(r.weight));
+    const taken=d=>weekData[d]&&Object.values(weekData[d]).some(r=>r.status);
+    let showDays=days.filter(d=>isPractice(d)||hasData(d));
+    if(!showDays.length) showDays=days.filter(d=>{const dow=parseLocal(d).getDay();return dow>=1&&dow<=5;});
     let head='<tr><th style="text-align:left">Wrestler</th>';
-    showDays.forEach(d=>head+='<th>'+parseLocal(d).toLocaleDateString(undefined,{weekday:'short'})+'<br><span style="font-weight:400">'+parseLocal(d).toLocaleDateString(undefined,{month:'numeric',day:'numeric'})+'</span></th>');
+    showDays.forEach(d=>{
+      const off=!isPractice(d);
+      const sub= off ? '<span class="thsub">no practice</span>' : ((d<today && !taken(d)) ? '<span class="thsub warn">not taken</span>' : '');
+      head+='<th class="'+(off?'offday':'')+'">'+parseLocal(d).toLocaleDateString(undefined,{weekday:'short'})+'<br><span style="font-weight:400">'+parseLocal(d).toLocaleDateString(undefined,{month:'numeric',day:'numeric'})+'</span>'+sub+'</th>';
+    });
     head+='<th class="totcol">Att. Rate</th><th class="totcol">Wt. Change</th></tr>';
     let body='';
     roster.forEach(r=>{
-      let attended=0,held=0,firstW=null,lastW=null,cells='';
+      let first=null,last=null,cells='';
       showDays.forEach(d=>{
         const rec=(weekData[d]||{})[r.id]||{}, st=rec.status;
-        if(st){held++; if(st==='present')attended++;}
         let mark='<span class="cell-x">—</span>';
         if(st==='present')mark='<span class="cell-p">P</span>'; else if(st==='absent')mark='<span class="cell-a">A</span>'; else if(st==='excused')mark='<span class="cell-e">E</span>';
         let wtxt='';
-        if(rec.weight!=null&&!isNaN(rec.weight)){ wtxt='<div class="cell-w">'+rec.weight+'</div>'; if(firstW===null)firstW=rec.weight; lastW=rec.weight; }
-        cells+='<td>'+mark+wtxt+'</td>';
+        if(validW(rec.weight)){ wtxt='<div class="cell-w">'+rec.weight+'</div>'; if(first===null)first={date:d,weight:rec.weight}; last={date:d,weight:rec.weight}; }
+        const reason=canEdit && (st==='absent'||st==='excused') ? (notes[r.id]||{})[d] : '';
+        cells+='<td class="'+(isPractice(d)?'':'offday')+'"'+(reason?' title="'+escapeHtml(reason)+'"':'')+'>'+mark+wtxt+'</td>';
       });
-      const rate=held?Math.round(attended/held*100)+'%':'—';
-      let wc='—',wcls='';
-      if(firstW!=null&&lastW!=null&&firstW!==lastW){ const diff=+(lastW-firstW).toFixed(1); wc=(diff>0?'+':'')+diff+' lb'; wcls=diff>0?'cell-a':'cell-p'; }
-      else if(firstW!=null){ wc='steady'; }
-      body+=`<tr><td class="name clickable" data-profile="${r.id}">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate">${rate}</td><td class="totcol ${wcls}">${wc}</td></tr>`;
+      const rt=rateFor(r, days, weekData);
+      const rate=rt.pct==null?'—':rt.pct+'%';
+      let wc='—',wcls='',wflag='';
+      if(first&&last&&first.weight!==last.weight){
+        const diff=+(last.weight-first.weight).toFixed(1); wc=(diff>0?'+':'')+diff+' lb'; wcls=diff>0?'cell-a':'cell-p';
+        const pct=(first.weight-last.weight)/first.weight*100;
+        if(daysBetween(first.date,last.date)>=3 && pct>WEEKLY_LOSS_LIMIT_PCT) wflag=' <span class="wkflag" title="Down '+pct.toFixed(1)+'% this week, faster than the '+WEEKLY_LOSS_LIMIT_PCT+'%-per-week guideline">⚠</span>';
+      } else if(first){ wc='steady'; }
+      body+=`<tr><td class="name clickable" data-profile="${r.id}">${escapeHtml(r.name)}${r.wclass?'<div class="sub2">'+escapeHtml(r.wclass)+' lb</div>':''}</td>${cells}<td class="totcol rate" title="${rt.attended} of ${rt.counted} counted practices">${rate}</td><td class="totcol ${wcls}">${wc}${wflag}</td></tr>`;
     });
     t.innerHTML=head+body;
     t.querySelectorAll('[data-profile]').forEach(td=>{ td.onclick=()=>openProfile(td.dataset.profile); });
@@ -594,9 +830,14 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     // Scan the season for this wrestler's records.
     const dates=[]; for(let i=0;i<SEASON_SCAN_DAYS;i++) dates.push(addDays(todayStr(),-i));
     const recs=[]; // {date, status, weight}
+    const takenDays={}; // date -> {wid:{status}} (only whether anyone was marked matters)
     await Promise.all(dates.map(dstr=>
       fb.getDocs(attCol(dstr)).then(snap=>{
-        snap.docs.forEach(doc=>{ if(doc.id===wid){ const d=doc.data(); if(d.status||d.weight!=null) recs.push({date:dstr, status:d.status||null, weight:(d.weight!=null&&!isNaN(d.weight))?d.weight:null}); } });
+        snap.docs.forEach(doc=>{
+          const d=doc.data();
+          if(d.status){ (takenDays[dstr]=takenDays[dstr]||{})[doc.id]={status:d.status}; }
+          if(doc.id===wid && (d.status||d.weight!=null)) recs.push({date:dstr, status:d.status||null, weight:validW(d.weight)?d.weight:null});
+        });
       }).catch(()=>{})
     ));
     if(myToken!==profileToken) return; // a newer open/close superseded this
@@ -606,7 +847,10 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const absent=recs.filter(r=>r.status==='absent').length;
     const excused=recs.filter(r=>r.status==='excused').length;
     const held=present+absent+excused;
-    const rate=held?Math.round(present/held*100):null;
+    const rt=rateFor(w, dates, takenDays), rate=rt.pct;
+    const rStart=[schedule.seasonStart, createdStr(w), dates[dates.length-1]].filter(Boolean).sort().pop();
+    let notTaken=0; const today=todayStr();
+    dates.forEach(d=>{ if(d<today && d>=rStart && isPractice(d) && !takenDays[d]) notTaken++; });
     const weighins=recs.filter(r=>r.weight!=null);
     const weights=weighins.map(r=>r.weight);
     const curW=weights.length?weights[weights.length-1]:null;
@@ -647,10 +891,37 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       <div class="pstat"><div class="pn" style="color:${netCls==='a'?'var(--absent)':netCls==='p'?'var(--present)':'inherit'}">${netTxt}</div><div class="pl">Net Change</div></div>
     </div>`;
 
+    // How the rate was counted
+    let cap = rt.counted ? `Attendance rate: ${rt.attended} of ${rt.counted} counted practices since ${medDate(rStart)}` : `No counted practices since ${medDate(rStart)} yet`;
+    if(rt.unmarked) cap+=`, including ${rt.unmarked} unmarked (counted as missed)`;
+    cap+='.';
+    if(notTaken) cap+=` ${notTaken} scheduled practice${notTaken===1?'':'s'} had no attendance taken and ${notTaken===1?'is':'are'} skipped.`;
+    if(notTaken && !schedule.seasonStart && canEdit) cap+=` Set a season start under Schedule to skip preseason days.`;
+    html+=`<div class="pchart-cap" style="margin:-10px 0 20px;text-align:left">${cap}</div>`;
+
+    // Weight management vs class
+    const target=targetOf(w);
+    const lastWi=weighins.length?weighins[weighins.length-1]:null;
+    const pflags=lastWi?weightFlags(weighins.slice(0,-1), lastWi.weight, lastWi.date):[];
+    if(target!=null || pflags.length){
+      html+=`<div class="psection-title">Weight management</div><div class="wmgmt">`;
+      if(target!=null && lastWi){
+        const v=vsClass(w,lastWi.weight);
+        html+=`<div class="wm-line">${lastWi.weight} lb on ${medDate(lastWi.date)}, <b style="color:${v.cls==='ok'?'var(--present)':'var(--ink)'}">${v.txt}</b> ${v.txt==='on weight'?'for':''} the ${target} lb class.</div>`.replace('  ',' ');
+      } else if(target!=null){
+        html+=`<div class="wm-line">${target} lb class. No weigh-ins yet.</div>`;
+      } else {
+        html+=`<div class="wm-line">No weight class set, so there’s nothing to compare against.</div>`;
+      }
+      if(pflags.length) pflags.forEach(f=>{ html+=`<div class="wm-flag">⚠ ${escapeHtml(f.long)}</div>`; });
+      else if(lastWi && weighins.length>1) html+=`<div class="wm-ok">No weight flags on the latest weigh-in.</div>`;
+      html+=`<div class="wm-note">Flags follow the NFHS guideline of losing no more than ${WEEKLY_LOSS_LIMIT_PCT}% of body weight per week, plus any single change of ${SWING_ALERT_PCT}% or more. They’re prompts to check in, not medical advice.</div></div>`;
+    }
+
     // Weight trend
     html+=`<div class="psection-title">Weight trend</div>`;
     if(weighins.length>=2){
-      html+=sparkline(weighins);
+      html+=sparkline(weighins, target);
       html+=`<div class="pchart-cap">${weighins.length} weigh-ins · start ${startW} · high ${hiW} · low ${loW}</div>`;
     } else if(weighins.length===1){
       html+=`<div class="pchart-empty">One weigh-in so far (${weighins[0].weight} lb on ${medDate(weighins[0].date)}). Need two to chart a trend.</div>`;
@@ -668,6 +939,19 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
         rowsH+=`<tr><td class="wd">${medDate(r.date)}</td><td class="ww">${r.weight} lb</td><td class="wc2 ${ccls}">${chg}</td></tr>`;
       }
       html+=`<div class="psection-title" style="margin-top:20px">Weigh-in history</div><div class="whistory"><table>${rowsH}</table></div>`;
+    }
+
+    // Absences (reasons are coach-only)
+    const abs=recs.filter(r=>r.status==='absent'||r.status==='excused');
+    if(abs.length){
+      const wn=notes[wid]||{};
+      let rowsA='';
+      for(let i=abs.length-1;i>=0;i--){
+        const a=abs[i], reason=canEdit?(wn[a.date]||''):'';
+        rowsA+=`<tr><td class="wd">${medDate(a.date)}</td><td class="wt ${a.status==='absent'?'cell-a':'cell-e'}">${a.status==='absent'?'Absent':'Excused'}</td><td class="wr">${escapeHtml(reason)}</td></tr>`;
+      }
+      html+=`<div class="psection-title" style="margin-top:20px">Absences</div><div class="whistory"><table>${rowsA}</table></div>`;
+      if(canEdit) html+=`<div class="pchart-cap" style="text-align:left;margin-top:6px">Reasons are visible to signed-in coaches only.</div>`;
     }
 
     if(held===0 && weighins.length===0){
@@ -693,10 +977,12 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
 
   // Simple inline SVG sparkline for weight over time.
-  function sparkline(weighins){
+  function sparkline(weighins, target){
     const W=512, H=120, padX=10, padT=14, padB=18;
     const ws=weighins.map(r=>r.weight);
     let min=Math.min(...ws), max=Math.max(...ws);
+    const showT = target!=null && target>=min-10 && target<=max+10;
+    if(showT){ min=Math.min(min,target); max=Math.max(max,target); }
     if(min===max){ min-=1; max+=1; }
     const n=weighins.length;
     const x=i=> padX + (n===1?0:(i*(W-2*padX)/(n-1)));
@@ -707,15 +993,26 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const f=weighins[0], l=weighins[n-1];
     const startLbl=`<text x="${x(0).toFixed(1)}" y="${(y(f.weight)-7).toFixed(1)}" font-size="11" fill="var(--ink-soft)" font-family="Oswald,sans-serif">${f.weight}</text>`;
     const endLbl=`<text x="${x(n-1).toFixed(1)}" y="${(y(l.weight)-7).toFixed(1)}" font-size="11" fill="var(--ink)" font-family="Oswald,sans-serif" text-anchor="end">${l.weight}</text>`;
+    const tline = showT ? `<line x1="${padX}" x2="${W-padX}" y1="${y(target).toFixed(1)}" y2="${y(target).toFixed(1)}" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/><text x="${W/2}" y="${(y(target)+(y(target)>H-padB-4?-5:12)).toFixed(1)}" font-size="10.5" fill="var(--ink-soft)" font-family="Oswald,sans-serif" text-anchor="middle">${target} class</text>` : '';
     return `<svg class="pchart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      ${tline}
       <polyline points="${pts}" fill="none" stroke="var(--singlet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
       ${dots}${startLbl}${endLbl}
     </svg>`;
   }
 
   function exportDayCSV(){
-    const rows=[['Date','Wrestler','Weight Class','Status','Weight (lb)','Change vs Last']];
-    roster.forEach(r=>{ const rec=attendance[r.id]||{}, prev=prevWeights[r.id]; let chg=''; if(rec.weight!=null&&!isNaN(rec.weight)&&prev){const d=+(rec.weight-prev.weight).toFixed(1); chg=(d>0?'+':'')+d;} rows.push([selDate,r.name,r.wclass||'',rec.status||'',(rec.weight!=null&&!isNaN(rec.weight))?rec.weight:'',chg]); });
+    const hdr=['Date','Practice Day','Wrestler','Weight Class','Status','Weight (lb)','Change vs Last','Vs Class','Weight Flag'];
+    if(canEdit) hdr.push('Absence Reason');
+    const rows=[hdr];
+    roster.forEach(r=>{
+      const rec=attendance[r.id]||{}, prev=prevWeights[r.id]; let chg='';
+      if(validW(rec.weight)&&prev){const d=+(rec.weight-prev.weight).toFixed(1); chg=(d>0?'+':'')+d;}
+      const v=vsClass(r,rec.weight), fl=flagsFor(r.id).map(f=>f.short).join('; ');
+      const line=[selDate,isPractice(selDate)?'yes':'no',r.name,r.wclass||'',rec.status||'',validW(rec.weight)?rec.weight:'',chg,v?v.txt:'',fl];
+      if(canEdit) line.push((notes[r.id]||{})[selDate]||'');
+      rows.push(line);
+    });
     downloadCSV(rows,'attendance_'+selDate+'.csv');
   }
   async function exportWeekCSV(){
@@ -724,9 +1021,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const rows=[header], snaps={};
     await Promise.all(days.map(d=>fb.getDocs(attCol(d)).then(s=>{const day={};s.docs.forEach(doc=>day[doc.id]=doc.data());snaps[d]=day;}).catch(()=>{snaps[d]={};})));
     roster.forEach(r=>{
-      let attended=0,held=0,firstW=null,lastW=null; const line=[r.name,r.wclass||''];
-      days.forEach(d=>{ const rec=(snaps[d]||{})[r.id]||{}; if(rec.status){held++;if(rec.status==='present')attended++;} line.push(rec.status||''); if(rec.weight!=null&&!isNaN(rec.weight)){line.push(rec.weight);if(firstW===null)firstW=rec.weight;lastW=rec.weight;}else line.push(''); });
-      line.push(held?Math.round(attended/held*100)+'%':''); line.push((firstW!=null&&lastW!=null)?((lastW-firstW>0?'+':'')+(+(lastW-firstW).toFixed(1))):''); rows.push(line);
+      let firstW=null,lastW=null; const line=[r.name,r.wclass||''];
+      days.forEach(d=>{ const rec=(snaps[d]||{})[r.id]||{}; line.push(rec.status||''); if(rec.weight!=null&&!isNaN(rec.weight)){line.push(rec.weight);if(firstW===null)firstW=rec.weight;lastW=rec.weight;}else line.push(''); });
+      const rt=rateFor(r, days, snaps); line.push(rt.pct==null?'':rt.pct+'%'); line.push((firstW!=null&&lastW!=null)?((lastW-firstW>0?'+':'')+(+(lastW-firstW).toFixed(1))):''); rows.push(line);
     });
     downloadCSV(rows,'weekly_'+weekStart+'.csv');
   }
@@ -734,6 +1031,43 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const csv=rows.map(r=>r.map(c=>{const s=String(c??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'}), url=URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  /* ---------- SCHEDULE MODAL ---------- */
+  const DOW=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat'],[0,'Sun']];
+  function openSchedule(){
+    if(!canEdit) return;
+    schedDraft={days:[...schedule.practiceDays]};
+    $('#seasonStart').value=schedule.seasonStart||'';
+    renderDow(); renderOverrides();
+    $('#schedScrim').classList.add('open');
+  }
+  function closeSchedule(){ $('#schedScrim').classList.remove('open'); schedDraft=null; }
+  function renderDow(){
+    const g=$('#dowGroup');
+    g.innerHTML=DOW.map(([n,l])=>`<button type="button" data-dow="${n}" aria-pressed="${schedDraft.days.includes(n)}">${l}</button>`).join('');
+    g.querySelectorAll('[data-dow]').forEach(b=>b.onclick=()=>{
+      const n=+b.dataset.dow, i=schedDraft.days.indexOf(n);
+      if(i>=0) schedDraft.days.splice(i,1); else schedDraft.days.push(n);
+      b.setAttribute('aria-pressed', schedDraft.days.includes(n));
+    });
+  }
+  function renderOverrides(){
+    const el=$('#ovList');
+    const keys=Object.keys(schedule.overrides).filter(k=>typeof schedule.overrides[k]==='boolean').sort().reverse();
+    if(!keys.length){ el.innerHTML='<div class="ovempty">None yet. Cancel or add a single date from the Daily tab.</div>'; return; }
+    el.innerHTML=keys.map(k=>`<div class="ovrow"><span>${escapeHtml(shortDate(k))}</span><span class="ovk ${schedule.overrides[k]?'add':'cancel'}">${schedule.overrides[k]?'Added':'Cancelled'}</span><button class="linkbtn" data-rm="${k}">Remove</button></div>`).join('');
+    el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>setOverride(b.dataset.rm,null));
+  }
+  async function saveSchedule(){
+    if(!canEdit||!schedDraft) return;
+    const btn=$('#schedSave'); btn.disabled=true;
+    try{
+      await fb.setDoc(settingsDoc(), {practiceDays:[...schedDraft.days].sort(), seasonStart:$('#seasonStart').value||''}, {merge:true});
+      closeSchedule(); banner('Practice schedule saved.');
+      if(profileOpenId) renderProfile(profileOpenId);
+    } catch(e){ banner('Could not save the schedule. Check that the updated Firestore rules are published.',true); }
+    finally{ btn.disabled=false; }
   }
 
   function syncDateInput(){ $('#dateInput').value=selDate; }
@@ -762,11 +1096,19 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   $('#saveAdd').onclick=()=>{ const n=$('#fName').value.trim(); if(!n){$('#fName').focus();return;} addWrestler(n,$('#fClass').value.trim()); scrim.classList.remove('open'); };
   $('#fName').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();}; $('#fClass').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();};
 
+  // schedule modal wiring
+  const sscrim=$('#schedScrim');
+  $('#schedBtn').onclick=openSchedule;
+  $('#schedCancel').onclick=closeSchedule;
+  $('#schedSave').onclick=saveSchedule;
+  sscrim.onclick=e=>{ if(e.target===sscrim) closeSchedule(); };
+  $('#reasonList').innerHTML=ABSENCE_REASONS.map(r=>`<option value="${escapeHtml(r)}">`).join('');
+
   // profile modal wiring
   const pscrim=$('#profileScrim');
   $('#profileClose').onclick=closeProfile;
   pscrim.onclick=e=>{ if(e.target===pscrim) closeProfile(); };
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && profileOpenId) closeProfile(); });
+  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
 
   syncDateInput();
   start();
@@ -774,4 +1116,3 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
 </script>
 </body>
 </html>
-
