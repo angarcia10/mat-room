@@ -202,7 +202,71 @@
   .daytag.off .pill::before { background:var(--ink-soft); opacity:.55; }
   .linkbtn { background:none; border:none; padding:0; color:var(--singlet); font:inherit; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
   .linkbtn:hover { color:var(--singlet-deep); }
-  .tab-side { margin-left:auto; align-self:center; padding:7px 13px; }
+  .tab-actions { margin-left:auto; align-self:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .tab-actions .ghost-btn { padding:7px 13px; }
+
+  /* ---- Missing weigh-in reminder ---- */
+  .weigh.missing { border-color:var(--flag); box-shadow:0 0 0 2px color-mix(in srgb,var(--flag) 22%,transparent); }
+  .delta.missing { color:var(--flag); }
+  .missbar { background:var(--flag-bg); color:var(--flag); border-radius:9px; padding:10px 14px; font-size:13px; font-weight:500; margin:0 0 12px; }
+
+  /* ---- Profile details ---- */
+  .pdetails { display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; color:var(--ink-soft); margin:-4px 0 16px; }
+  .pdetails b { color:var(--ink); font-weight:600; }
+  .pdetails a { color:var(--singlet); }
+  .pedit details summary { cursor:pointer; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; color:var(--singlet); list-style-position:inside; }
+  .pgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .pgrid .field { margin-bottom:0; } .pgrid .full { grid-column:1 / -1; }
+  .pedit-actions { display:flex; align-items:center; gap:10px; margin-top:12px; }
+
+  /* ---- Wrestler Mode (kiosk) ---- */
+  .kiosk { position:fixed; inset:0; z-index:900; background:var(--canvas); display:flex; flex-direction:column; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+  .k-top { background:var(--mat); color:#f5f2ec; border-bottom:3px solid var(--singlet); padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  .k-brand { display:flex; align-items:center; gap:12px; min-width:0; }
+  .k-brand img { height:42px; width:auto; }
+  .k-title { font-family:'Oswald',sans-serif; font-size:22px; letter-spacing:.6px; text-transform:uppercase; line-height:1.1; }
+  .k-date { font-size:13px; opacity:.75; }
+  .k-exit { background:transparent; border:1px solid rgba(245,242,236,.35); color:#f5f2ec; border-radius:8px; padding:8px 14px; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; cursor:pointer; }
+  .k-body { flex:1; overflow-y:auto; padding:20px; max-width:1100px; width:100%; margin:0 auto; box-sizing:border-box; }
+  .k-note { background:var(--flag-bg); color:var(--flag); border-radius:9px; padding:10px 14px; font-size:13.5px; margin-bottom:14px; }
+  .k-search { width:100%; box-sizing:border-box; font-size:17px; padding:13px 16px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink); outline:none; margin-bottom:14px; font-family:'Inter',sans-serif; }
+  .k-search:focus { border-color:var(--singlet); }
+  .k-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; }
+  .k-name-btn { display:flex; align-items:center; gap:11px; min-height:64px; padding:10px 14px; border-radius:11px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; text-align:left; font-size:15.5px; font-weight:600; font-family:'Inter',sans-serif; box-shadow:var(--shadow); }
+  .k-name-btn:active { transform:scale(.98); }
+  .k-name-btn .avatar { flex:none; }
+  .k-name-btn .kn { flex:1; min-width:0; }
+  .k-name-btn .ks { display:block; font-size:12px; font-weight:500; color:var(--ink-soft); margin-top:2px; }
+  .k-name-btn.done { border-color:var(--present); background:color-mix(in srgb,var(--present) 9%,var(--card)); }
+  .k-name-btn.done .ks { color:var(--present); font-weight:600; }
+  .k-count { text-align:center; color:var(--ink-soft); font-size:13px; margin:18px 0 6px; }
+  .k-empty { color:var(--ink-soft); text-align:center; padding:30px 0; }
+  .k-sheet { position:fixed; inset:0; z-index:950; background:rgba(10,14,18,.6); display:flex; align-items:center; justify-content:center; padding:20px; }
+  .k-sheet.top { z-index:1100; }
+  .k-card { background:var(--card); color:var(--ink); border-radius:16px; width:100%; max-width:400px; padding:26px 24px; text-align:center; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+  .k-card .kc-name { font-family:'Oswald',sans-serif; font-size:26px; letter-spacing:.4px; margin-bottom:4px; }
+  .k-card .kc-sub { color:var(--ink-soft); font-size:14px; margin-bottom:18px; line-height:1.45; }
+  .k-wt { display:flex; align-items:center; justify-content:center; gap:8px; border:2px solid var(--line); border-radius:12px; padding:8px 16px; margin:0 auto; max-width:240px; }
+  .k-wt:focus-within { border-color:var(--singlet); }
+  .k-wt input { width:100%; border:none; background:transparent; color:var(--ink); font-family:'Oswald',sans-serif; font-size:40px; font-weight:600; text-align:center; outline:none; -moz-appearance:textfield; }
+  .k-wt input::-webkit-outer-spin-button, .k-wt input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .k-wt span { font-family:'Oswald',sans-serif; font-size:18px; color:var(--ink-soft); }
+  .k-err { color:var(--absent); font-size:13px; font-weight:500; min-height:19px; margin-top:10px; }
+  .k-actions { display:flex; gap:10px; margin-top:12px; }
+  .k-actions button, .k-plain { flex:1; padding:14px; border-radius:10px; font-family:'Oswald',sans-serif; font-size:16px; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; }
+  .k-actions .k-go { border:none; background:var(--singlet); color:#fff; } .k-actions .k-go:disabled { opacity:.6; }
+  .k-actions .k-back, .k-plain { border:1px solid var(--line); background:transparent; color:var(--ink); }
+  .k-done .kd-check { width:66px; height:66px; border-radius:50%; background:var(--present); color:#fff; font-size:36px; line-height:66px; margin:0 auto 12px; }
+  .pin-dots { display:flex; gap:14px; justify-content:center; margin:4px 0 18px; }
+  .pin-dots i { width:15px; height:15px; border-radius:50%; border:2px solid var(--ink-soft); }
+  .pin-dots i.on { background:var(--ink); border-color:var(--ink); }
+  .pin-dots.shake { animation:shake .35s; }
+  @keyframes shake { 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  .pinpad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:270px; margin:0 auto; }
+  .pinpad button { height:58px; border-radius:12px; border:1px solid var(--line); background:var(--canvas); color:var(--ink); font-family:'Oswald',sans-serif; font-size:22px; cursor:pointer; }
+  .pinpad button:active { background:var(--line); }
+  .pinpad .blank { visibility:hidden; }
+  @media (max-width:720px){ .pgrid { grid-template-columns:1fr; } .k-grid { grid-template-columns:1fr 1fr; } .k-title { font-size:18px; } .k-brand img { height:34px; } }
 
   /* ---- Absence reason (Daily) ---- */
   .status-cell { display:flex; flex-direction:column; gap:6px; min-width:0; }
@@ -313,7 +377,10 @@
       <svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       View only — sign in to edit
     </div>
-    <button class="ghost-btn tab-side hidden" id="schedBtn">Schedule</button>
+    <div class="tab-actions">
+      <button class="ghost-btn hidden" id="kioskBtn">Wrestler Mode</button>
+      <button class="ghost-btn hidden" id="schedBtn">Schedule</button>
+    </div>
   </div>
 
   <div id="dailyView">
@@ -334,6 +401,7 @@
         <button class="add-btn" id="addBtn">+ Add Wrestler</button>
       </div>
     </div>
+    <div class="missbar hidden" id="missBar"></div>
     <div class="roster" id="roster"></div>
   </div>
 
@@ -379,11 +447,48 @@
     <div class="field"><label>Regular practice days</label><div class="dow-group" id="dowGroup"></div></div>
     <div class="field"><label for="seasonStart">Season start</label><input type="date" id="seasonStart"></div>
     <div class="field"><label>One-off changes</label><div class="ovlist" id="ovList"></div></div>
+    <div class="field"><label>Wrestler Mode PIN</label><div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink-soft)"><span id="pinState">Not set</span><button class="linkbtn" id="pinChange">Set PIN</button></div></div>
     <div class="modal-actions"><button class="btn-cancel" id="schedCancel">Close</button><button class="btn-save" id="schedSave">Save schedule</button></div>
   </div>
 </div>
 
 <datalist id="reasonList"></datalist>
+
+<!-- Wrestler Mode (kiosk) -->
+<div class="kiosk hidden" id="kiosk">
+  <div class="k-top">
+    <div class="k-brand"><img src="LOGAN.png" alt=""><div><div class="k-title">Practice check-in</div><div class="k-date" id="kDate"></div></div></div>
+    <button class="k-exit" id="kExit">Coach</button>
+  </div>
+  <div class="k-body">
+    <div class="k-note hidden" id="kNote"></div>
+    <input class="k-search" id="kSearch" type="search" placeholder="Find your name" autocomplete="off" aria-label="Find your name">
+    <div class="k-grid" id="kGrid"></div>
+    <div class="k-count" id="kCount"></div>
+  </div>
+</div>
+<div class="k-sheet hidden" id="kSheet">
+  <div class="k-card">
+    <div class="kc-name" id="kName"></div>
+    <div class="kc-sub" id="kSub">Step on the scale and enter your weight.</div>
+    <div class="k-wt"><input id="kWeight" type="number" inputmode="decimal" step="0.1" placeholder="000.0" aria-label="Your weight"><span>lb</span></div>
+    <div class="k-err" id="kErr"></div>
+    <div class="k-actions"><button class="k-back" id="kCancel">Back</button><button class="k-go" id="kSubmit">Check in</button></div>
+  </div>
+</div>
+<div class="k-sheet hidden" id="kDone">
+  <div class="k-card k-done"><div class="kd-check">✓</div><div class="kc-name" id="kDoneName"></div><div class="kc-sub" id="kDoneSub" style="margin-bottom:0"></div></div>
+</div>
+<div class="k-sheet top hidden" id="pinSheet">
+  <div class="k-card">
+    <div class="kc-name" id="pinTitle">Coach PIN</div>
+    <div class="kc-sub" id="pinSub"></div>
+    <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+    <div class="pinpad" id="pinPad"></div>
+    <div class="k-err" id="pinErr"></div>
+    <button class="k-plain" id="pinCancel" style="width:100%;margin-top:6px">Cancel</button>
+  </div>
+</div>
 
 <div class="scrim" id="profileScrim">
   <div class="modal profile-modal">
@@ -422,6 +527,9 @@ const firebaseConfig = {
   appId: "1:1050736057230:web:5abde8fb15138048a122df"
 };
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 /* ============================================================
    COACH EMAILS — must match the list in firestore.rules.
    These Google accounts get the edit controls. This list is only
@@ -431,10 +539,7 @@ const firebaseConfig = {
 const COACH_EMAILS = [
   "angarcia1001@gmail.com",
   "perryrpadilla@gmail.com",
-  "rocky.lunceford@loganschools.org",
-  "kadindhal0na@gmail.com",
-  "olsen.kevinj@gmail.com",
-  "Noahward555t@gmail.com"
+  "rocky.lunceford@loganschools.org"
 ];
 /* ============================================================ */
 
@@ -493,6 +598,8 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   // Coach-only absence reasons: privateNotes/{wrestlerId} = { notes: { 'YYYY-MM-DD': 'Sick' } }
   let notes={}, unsubNotes=null, noteTimers={};
   let prevToken=0;
+  let kioskPinHash='', kioskOn=false, kSelId=null, kIdle=null, kDoneTimer=null, kDayTimer=null;
+  const KIOSK_KEY='matroom-kiosk';
   let hydro={}; // coach-only hydration test per wrestler (privateNotes/{id}.hydration)
 
   function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
@@ -584,6 +691,8 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     $('#viewBadge').classList.add('hidden');
     $('#addBtn').disabled = !canEdit;
     $('#schedBtn').classList.toggle('hidden', !canEdit);
+    $('#kioskBtn').classList.toggle('hidden', !canEdit);
+    if(canEdit && !kioskOn && lsGet(KIOSK_KEY)==='1') enterKiosk(true);
     watchNotes();
     if(view==='day') renderDaily(); else renderWeek();
     if(profileOpenId) renderProfile(profileOpenId); // refresh edit controls if open
@@ -609,6 +718,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     if(unsubWeek){ unsubWeek.forEach(u=>u()); unsubWeek=null; }
     roster=[]; attendance={}; weekData={}; prevWeights={}; notes={}; hydro={};
     if(profileOpenId) closeProfile();
+    hideKioskUI();
     $('#schedScrim').classList.remove('open'); $('#scrim').classList.remove('open');
     $('#roster').innerHTML=''; $('#weekTable').innerHTML='';
     if(view!=='day') setView('day');
@@ -640,11 +750,14 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     unsubRoster = fb.onSnapshot(rosterCol(), snap=>{
       roster = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
       if(view==='day') renderDaily(); else renderWeek();
+      if(kioskOn) renderKiosk();
       if(profileOpenId){ const w=roster.find(r=>r.id===profileOpenId); if(w) updateProfileHeader(w); }
     }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
     unsubSettings = fb.onSnapshot(settingsDoc(), snap=>{
       const d=snap.exists()?snap.data():{};
       schedule={ practiceDays:Array.isArray(d.practiceDays)?d.practiceDays:[1,2,3,4,5], seasonStart:d.seasonStart||'', overrides:d.overrides||{} };
+      kioskPinHash=d.kioskPinHash||''; renderPinState();
+      if(kioskOn) renderKiosk();
       renderDayTag(); if(view==='week') renderWeek();
       if($('#schedScrim').classList.contains('open')) renderOverrides();
     }, err=>{ console.warn('Schedule not readable — publish the updated Firestore rules (settings).', err.code); renderDayTag(); });
@@ -665,7 +778,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     unsubAtt=null; if(!started) return;
     attendance={};
     unsubAtt = fb.onSnapshot(attCol(selDate), snap=>{
-      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily();
+      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily(); if(kioskOn) renderKiosk();
     }, ()=>{});
     loadPrevWeights();
   }
@@ -720,15 +833,32 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
   function addWrestler(name,wclass){ if(!canEdit) return; const ref=fb.doc(rosterCol()); fb.setDoc(ref,{name,wclass:wclass||'',created:Date.now()}).catch(()=>banner('Could not add wrestler.',true)); }
   function removeWrestler(wid,name){ if(!canEdit) return; if(!confirm('Remove '+name+' from the roster? Past records stay saved.')) return; fb.deleteDoc(fb.doc(fdb,'roster',wid)).catch(()=>banner('Could not remove wrestler.',true)); }
-  function updateWeightClass(wid, wclass){
+  function updateProfile(wid, fields){
     if(!canEdit) return Promise.reject();
-    return fb.updateDoc(fb.doc(fdb,'roster',wid), {wclass: wclass||''});
+    return fb.updateDoc(fb.doc(fdb,'roster',wid), fields);
   }
 
   function updateCounts(){
     let p=0,a=0,e=0,w=0;
     roster.forEach(r=>{ const rec=attendance[r.id]||{}; if(rec.status==='present')p++; else if(rec.status==='absent')a++; else if(rec.status==='excused')e++; if(rec.weight!=null&&!isNaN(rec.weight))w++; });
     $('#cPresent').textContent=p; $('#cAbsent').textContent=a; $('#cExcused').textContent=e; $('#cWeigh').textContent=w;
+    updateMissing();
+  }
+  // Present at a practice with no weight recorded: highlight the box and list them.
+  function updateMissing(){
+    const prac=isPractice(selDate), missing=[];
+    roster.forEach(r=>{
+      const rec=attendance[r.id]||{}, row=document.querySelector('.row[data-id="'+r.id+'"]');
+      const miss = canEdit && prac && rec.status==='present' && !validW(rec.weight);
+      if(miss) missing.push(r.name);
+      if(!row) return;
+      const box=row.querySelector('.weigh'); if(box) box.classList.toggle('missing', miss);
+      const dl=row.querySelector('.delta');
+      if(dl){ if(miss){ dl.className='delta missing'; dl.textContent='Needs weigh-in'; } else if(dl.classList.contains('missing')){ dl.className='delta'; dl.textContent=''; updateDelta(r.id); } }
+    });
+    const bar=$('#missBar'); if(!bar) return;
+    bar.classList.toggle('hidden', !missing.length);
+    if(missing.length) bar.textContent='⚠ '+missing.length+' present without a weigh-in: '+missing.join(', ');
   }
   function deltaHtml(wid){
     const rec=attendance[wid]||{}, prev=prevWeights[wid];
@@ -739,8 +869,10 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   }
   function updateDelta(wid){
     const el=document.querySelector('.delta[data-delta="'+wid+'"]'); if(!el) return;
-    const d=deltaHtml(wid); el.className='delta '+d.cls; el.textContent=d.txt;
     const w=roster.find(r=>r.id===wid), rec=attendance[wid]||{};
+    const d=deltaHtml(wid);
+    if(canEdit && isPractice(selDate) && rec.status==='present' && !validW(rec.weight)){ el.className='delta missing'; el.textContent='Needs weigh-in'; }
+    else { el.className='delta '+d.cls; el.textContent=d.txt; }
     const tg=document.querySelector('[data-tgt="'+wid+'"]');
     if(tg){ const v=vsClass(w, rec.weight); tg.className='tgt '+(v?v.cls:''); tg.textContent=v?', '+v.txt:''; }
     const mn=document.querySelector('[data-min="'+wid+'"]');
@@ -885,7 +1017,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     $('#pAvatar').style.background=colorFor(w.id);
     $('#pAvatar').textContent=initials(w.name);
     $('#pName').textContent=w.name;
-    $('#pClass').textContent = w.wclass ? (w.wclass+' lb weight class') : 'No weight class set';
+    const bits=[w.wclass ? (w.wclass+' lb weight class') : 'No weight class set'];
+    if(w.grade) bits.push('Grade '+w.grade);
+    $('#pClass').textContent = bits.join(', ');
   }
   function openProfile(wid){
     const w=roster.find(r=>r.id===wid); if(!w) return;
@@ -940,20 +1074,34 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
 
     let html='';
 
-    // Coach edit panel for weight class
+    // Profile details + coach editor
+    const det=[];
+    if(w.parentName||w.parentPhone){
+      const ph=w.parentPhone?` <a href="tel:${escapeHtml(String(w.parentPhone).replace(/[^0-9+]/g,''))}">${escapeHtml(w.parentPhone)}</a>`:'';
+      det.push(`<span>Parent/guardian: <b>${escapeHtml(w.parentName||'')}</b>${ph}</span>`);
+    }
+    if(w.phone) det.push(`<span>Wrestler phone: <a href="tel:${escapeHtml(String(w.phone).replace(/[^0-9+]/g,''))}">${escapeHtml(w.phone)}</a></span>`);
+    if(det.length) html+=`<div class="pdetails">${det.join('')}</div>`;
     if(canEdit){
       const isStd = w.wclass && WCLASSES.includes(String(w.wclass));
       const opts = ['<option value="">— none —</option>']
         .concat(WCLASSES.map(c=>`<option value="${c}" ${String(w.wclass)===c?'selected':''}>${c} lb</option>`))
         .concat([`<option value="__custom__" ${(w.wclass&&!isStd)?'selected':''}>Custom…</option>`]).join('');
-      html+=`<div class="pedit">
-        <div class="psection-title">Edit weight class <span class="savedtag" id="clsSaved">Saved ✓</span></div>
-        <div class="pedit-row">
-          <div class="field"><label>Standard class</label><select id="clsSelect">${opts}</select></div>
-          <div class="field ${(w.wclass&&!isStd)?'':'hidden'}" id="clsCustomWrap"><label>Custom value</label><input id="clsCustom" type="text" placeholder="e.g. 138" value="${(w.wclass&&!isStd)?escapeHtml(String(w.wclass)):''}"></div>
-          <button class="save-cls" id="clsSave">Save</button>
+      const grades=['','7','8','9','10','11','12'];
+      const gopts=grades.map(g=>`<option value="${g}" ${String(w.grade||'')===g?'selected':''}>${g?'Grade '+g:'— none —'}</option>`).join('');
+      const ev=k=>escapeHtml(w[k]?String(w[k]):'');
+      html+=`<div class="pedit"><details id="pEditDetails"><summary>Edit profile</summary>
+        <div class="pgrid">
+          <div class="field full"><label for="pfName">Name</label><input id="pfName" type="text" maxlength="60" value="${ev('name')}"></div>
+          <div class="field"><label for="clsSelect">Weight class</label><select id="clsSelect">${opts}</select></div>
+          <div class="field ${(w.wclass&&!isStd)?'':'hidden'}" id="clsCustomWrap"><label for="clsCustom">Custom class</label><input id="clsCustom" type="text" placeholder="e.g. 138" value="${(w.wclass&&!isStd)?escapeHtml(String(w.wclass)):''}"></div>
+          <div class="field"><label for="pfGrade">Grade</label><select id="pfGrade">${gopts}</select></div>
+          <div class="field"><label for="pfPhone">Wrestler phone</label><input id="pfPhone" type="tel" maxlength="30" value="${ev('phone')}"></div>
+          <div class="field"><label for="pfParent">Parent/guardian</label><input id="pfParent" type="text" maxlength="60" value="${ev('parentName')}"></div>
+          <div class="field"><label for="pfParentPhone">Parent phone</label><input id="pfParentPhone" type="tel" maxlength="30" value="${ev('parentPhone')}"></div>
         </div>
-      </div>`;
+        <div class="pedit-actions"><button class="save-cls" id="clsSave">Save profile</button><span class="savedtag" id="clsSaved">Saved ✓</span></div>
+      </details></div>`;
     }
 
     // Stats grid
@@ -1040,19 +1188,32 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     body.innerHTML=html;
     if(canEdit) wireHydro(wid);
 
-    // Wire the weight-class editor
+    // Wire the profile editor
     if(canEdit){
       const sel=$('#clsSelect'), customWrap=$('#clsCustomWrap'), custom=$('#clsCustom'), saveBtn=$('#clsSave'), saved=$('#clsSaved');
       sel.onchange=()=>{ customWrap.classList.toggle('hidden', sel.value!=='__custom__'); if(sel.value==='__custom__') custom.focus(); };
       const doSave=async()=>{
-        let val = sel.value==='__custom__' ? custom.value.trim() : sel.value;
+        const name=$('#pfName').value.trim();
+        if(!name){ $('#pfName').focus(); banner('Name can\u2019t be blank.', true); return; }
+        const fields={
+          name,
+          wclass: sel.value==='__custom__' ? custom.value.trim() : sel.value,
+          grade: $('#pfGrade').value,
+          phone: $('#pfPhone').value.trim(),
+          parentName: $('#pfParent').value.trim(),
+          parentPhone: $('#pfParentPhone').value.trim()
+        };
         saveBtn.disabled=true;
-        try{ await updateWeightClass(wid, val); saved.classList.add('show'); setTimeout(()=>saved.classList.remove('show'),1600); const ww=roster.find(r=>r.id===wid); if(ww){ww.wclass=val; updateProfileHeader(ww);} }
-        catch(e){ banner('Could not save weight class — are you still signed in?',true); }
+        try{
+          await updateProfile(wid, fields);
+          saved.classList.add('show'); setTimeout(()=>saved.classList.remove('show'),1600);
+          const ww=roster.find(r=>r.id===wid); if(ww){ Object.assign(ww, fields); updateProfileHeader(ww); }
+        }
+        catch(e){ banner('Could not save the profile. Are you still signed in?',true); }
         finally{ saveBtn.disabled=false; }
       };
       saveBtn.onclick=doSave;
-      if(custom) custom.onkeydown=e=>{ if(e.key==='Enter') doSave(); };
+      ['#pfName','#clsCustom','#pfPhone','#pfParent','#pfParentPhone'].forEach(id=>{ const el=$(id); if(el) el.onkeydown=e=>{ if(e.key==='Enter') doSave(); }; });
     }
   }
 
@@ -1181,10 +1342,135 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
 
+  /* ---------- WRESTLER MODE (kiosk) ---------- */
+  // A locked check-in screen on a coach-signed-in device. Exit needs the coach PIN.
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ if(v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
+  async function pinHash(pin){
+    const data=new TextEncoder().encode('matroom-kiosk:'+pin);
+    const buf=await crypto.subtle.digest('SHA-256', data);
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  function renderPinState(){
+    const st=$('#pinState'), b=$('#pinChange'); if(!st) return;
+    st.textContent = kioskPinHash ? 'PIN is set' : 'Not set';
+    b.textContent = kioskPinHash ? 'Change PIN' : 'Set PIN';
+  }
+  function enterKiosk(resume){
+    if(!canEdit) return;
+    if(!kioskPinHash && !resume){ askPin('set', ()=>enterKiosk()); return; }
+    if(profileOpenId) closeProfile();
+    $('#schedScrim').classList.remove('open'); $('#scrim').classList.remove('open');
+    if(view!=='day') setView('day');
+    if(selDate!==todayStr()) changeDate(todayStr());
+    kioskOn=true; lsSet(KIOSK_KEY,'1');
+    $('#kiosk').classList.remove('hidden');
+    $('#kSearch').value='';
+    renderKiosk();
+    clearInterval(kDayTimer);
+    kDayTimer=setInterval(()=>{ if(kioskOn && selDate!==todayStr()){ changeDate(todayStr()); renderKiosk(); } }, 60000);
+  }
+  function hideKioskUI(){
+    kioskOn=false; kSelId=null; clearTimeout(kIdle); clearTimeout(kDoneTimer); clearInterval(kDayTimer);
+    ['#kiosk','#kSheet','#kDone','#pinSheet'].forEach(id=>$(id).classList.add('hidden'));
+  }
+  function exitKiosk(){ hideKioskUI(); lsSet(KIOSK_KEY,null); renderDaily(); }
+  function kCheckedIn(id){ const rec=attendance[id]||{}; return rec.status==='present' && validW(rec.weight); }
+  function renderKiosk(){
+    if(!kioskOn) return;
+    $('#kDate').textContent=prettyDate(selDate);
+    const note=$('#kNote'), prac=isPractice(selDate);
+    note.classList.toggle('hidden', prac);
+    if(!prac) note.textContent='Today isn’t on the practice schedule. Check-ins still save, and a coach can make today a practice day.';
+    const q=$('#kSearch').value.trim().toLowerCase();
+    const list=roster.filter(r=>!q || (r.name||'').toLowerCase().includes(q));
+    const g=$('#kGrid');
+    if(!roster.length) g.innerHTML='<div class="k-empty">No wrestlers on the roster yet.</div>';
+    else if(!list.length) g.innerHTML='<div class="k-empty">No name matches “'+escapeHtml(q)+'”.</div>';
+    else g.innerHTML=list.map(r=>{ const done=kCheckedIn(r.id);
+      return `<button class="k-name-btn ${done?'done':''}" data-k="${r.id}"><div class="avatar" style="background:${colorFor(r.id)}">${initials(r.name)}</div><span class="kn">${escapeHtml(r.name)}<span class="ks">${done?'✓ Checked in':'Tap to check in'}</span></span></button>`; }).join('');
+    g.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>kOpen(b.dataset.k));
+    const n=roster.filter(r=>kCheckedIn(r.id)).length;
+    $('#kCount').textContent = roster.length ? `${n} of ${roster.length} checked in` : '';
+  }
+  function kResetIdle(){ clearTimeout(kIdle); kIdle=setTimeout(kClose, 45000); }
+  function kOpen(id){
+    const r=roster.find(x=>x.id===id); if(!r) return;
+    kSelId=id;
+    $('#kName').textContent=r.name;
+    $('#kSub').textContent = kCheckedIn(id) ? 'You’re already checked in. Enter your weight again only if it was wrong.' : 'Step on the scale and enter your weight.';
+    $('#kWeight').value=''; $('#kErr').textContent=''; $('#kSubmit').disabled=false;
+    $('#kSheet').classList.remove('hidden');
+    setTimeout(()=>$('#kWeight').focus(), 50);
+    kResetIdle();
+  }
+  function kClose(){ kSelId=null; clearTimeout(kIdle); $('#kSheet').classList.add('hidden'); }
+  async function kSubmit(){
+    const id=kSelId; if(!id) return;
+    const w=parseFloat($('#kWeight').value);
+    if(isNaN(w) || w<60 || w>400){ $('#kErr').textContent='That doesn’t look right. Check the scale and try again.'; $('#kWeight').focus(); return; }
+    const wt=Math.round(w*10)/10, d=selDate, cur=attendance[id]||{};
+    const next={...cur, status:'present', weight:wt};
+    $('#kSubmit').disabled=true;
+    try{
+      await fb.setDoc(attDoc(d,id), next);
+      attendance[id]=next;
+      if((notes[id]||{})[d]) setNote(id,'',true); // they showed up: drop any absence reason
+    } catch(e){ $('#kErr').textContent='Couldn’t save. Ask a coach for help.'; $('#kSubmit').disabled=false; return; }
+    const r=roster.find(x=>x.id===id);
+    kClose();
+    $('#kSearch').value='';
+    $('#kDoneName').textContent=r?r.name:'';
+    $('#kDoneSub').textContent=wt+' lb. You’re marked present.';
+    $('#kDone').classList.remove('hidden');
+    renderKiosk();
+    clearTimeout(kDoneTimer); kDoneTimer=setTimeout(()=>$('#kDone').classList.add('hidden'), 2200);
+  }
+
+  // PIN pad: mode 'set' (enter + confirm, then save) or 'verify' (exit Wrestler Mode).
+  let pinMode='verify', pinBuf='', pinFirst='', pinDoneCb=null, pinFails=0, pinLockUntil=0;
+  function askPin(mode, cb){
+    // Safety valve: if no PIN exists (e.g. it was never saved), don't trap the coach in Wrestler Mode.
+    if(mode==='verify' && !kioskPinHash){ if(confirm('No coach PIN is set. Leave Wrestler Mode?')) exitKiosk(); return; }
+    pinMode=mode; pinBuf=''; pinFirst=''; pinDoneCb=cb||null;
+    $('#pinTitle').textContent = mode==='set' ? (kioskPinHash?'New coach PIN':'Set a coach PIN') : 'Coach PIN';
+    $('#pinSub').textContent = mode==='set' ? 'Pick 4 digits. Coaches enter this to leave Wrestler Mode.' : 'Enter the PIN to go back to Coach Mode. Forgot it? Set a new one from another coach’s device under Schedule.';
+    $('#pinErr').textContent=''; drawDots();
+    $('#pinSheet').classList.remove('hidden');
+  }
+  function drawDots(){ [...$('#pinDots').children].forEach((d,i)=>d.classList.toggle('on', i<pinBuf.length)); }
+  function pinShake(msg){ $('#pinErr').textContent=msg; const el=$('#pinDots'); el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); pinBuf=''; drawDots(); }
+  async function pinComplete(){
+    if(pinMode==='verify'){
+      if(Date.now()<pinLockUntil){ pinShake('Too many tries. Wait a moment.'); return; }
+      let ok=false; try{ ok = kioskPinHash && (await pinHash(pinBuf))===kioskPinHash; }catch(e){}
+      if(ok){ pinFails=0; $('#pinSheet').classList.add('hidden'); exitKiosk(); }
+      else { pinFails++; if(pinFails>=5){ pinLockUntil=Date.now()+30000; pinFails=0; pinShake('Too many tries. Wait 30 seconds.'); } else pinShake('Wrong PIN.'); }
+      return;
+    }
+    if(!pinFirst){ pinFirst=pinBuf; pinBuf=''; drawDots(); $('#pinSub').textContent='Enter the same 4 digits again to confirm.'; $('#pinErr').textContent=''; return; }
+    if(pinBuf!==pinFirst){ pinFirst=''; $('#pinSub').textContent='Pick 4 digits. Coaches enter this to leave Wrestler Mode.'; pinShake('Those didn’t match. Start over.'); return; }
+    try{
+      const h=await pinHash(pinBuf);
+      await fb.setDoc(settingsDoc(), {kioskPinHash:h}, {merge:true});
+      kioskPinHash=h; renderPinState();
+      $('#pinSheet').classList.add('hidden');
+      banner('Wrestler Mode PIN saved.');
+      if(pinDoneCb) pinDoneCb();
+    } catch(e){ pinShake('Couldn’t save the PIN. Check your connection.'); }
+  }
+  function pinKey(k){
+    if(k==='del'){ pinBuf=pinBuf.slice(0,-1); drawDots(); return; }
+    if(pinBuf.length>=4) return;
+    pinBuf+=k; drawDots();
+    if(pinBuf.length===4) pinComplete();
+  }
+
   /* ---------- SCHEDULE MODAL ---------- */
   const DOW=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat'],[0,'Sun']];
   function openSchedule(){
     if(!canEdit) return;
+    renderPinState();
     schedDraft={days:[...schedule.practiceDays]};
     $('#seasonStart').value=schedule.seasonStart||'';
     renderDow(); renderOverrides();
@@ -1244,6 +1530,22 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   $('#saveAdd').onclick=()=>{ const n=$('#fName').value.trim(); if(!n){$('#fName').focus();return;} addWrestler(n,$('#fClass').value.trim()); scrim.classList.remove('open'); };
   $('#fName').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();}; $('#fClass').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();};
 
+  // Wrestler Mode wiring
+  $('#kioskBtn').onclick=()=>enterKiosk();
+  $('#kExit').onclick=()=>askPin('verify');
+  $('#kSearch').oninput=renderKiosk;
+  $('#kCancel').onclick=kClose;
+  $('#kSubmit').onclick=kSubmit;
+  $('#kWeight').oninput=()=>{ $('#kErr').textContent=''; kResetIdle(); };
+  $('#kWeight').onkeydown=e=>{ if(e.key==='Enter') kSubmit(); };
+  $('#kSheet').onclick=e=>{ if(e.target.id==='kSheet') kClose(); };
+  $('#kDone').onclick=()=>$('#kDone').classList.add('hidden');
+  $('#pinPad').innerHTML=['1','2','3','4','5','6','7','8','9','','0','del'].map(k=>k===''?'<button class="blank" tabindex="-1"></button>':`<button data-pin="${k}">${k==='del'?'⌫':k}</button>`).join('');
+  $('#pinPad').querySelectorAll('[data-pin]').forEach(b=>b.onclick=()=>pinKey(b.dataset.pin));
+  $('#pinCancel').onclick=()=>$('#pinSheet').classList.add('hidden');
+  document.addEventListener('keydown',e=>{ if($('#pinSheet').classList.contains('hidden')) return; if(/^[0-9]$/.test(e.key)) pinKey(e.key); else if(e.key==='Backspace') pinKey('del'); });
+  $('#pinChange').onclick=()=>askPin('set');
+
   // schedule modal wiring
   const sscrim=$('#schedScrim');
   $('#schedBtn').onclick=openSchedule;
@@ -1256,7 +1558,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   const pscrim=$('#profileScrim');
   $('#profileClose').onclick=closeProfile;
   pscrim.onclick=e=>{ if(e.target===pscrim) closeProfile(); };
-  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
+  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(kioskOn){ if(!$('#pinSheet').classList.contains('hidden')) $('#pinSheet').classList.add('hidden'); else kClose(); return; } if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
 
   syncDateInput();
 }
