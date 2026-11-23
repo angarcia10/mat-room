@@ -214,7 +214,151 @@
   .tab-actions { margin-left:auto; align-self:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .tab-actions .ghost-btn { padding:7px 13px; }
 
+  /* ---- Lineup ---- */
+  .lu-controls { display:flex; flex-wrap:wrap; gap:10px 16px; align-items:flex-end; margin-bottom:14px; }
+  .lu-controls .field { margin-bottom:0; }
+  .lu-controls select, .lu-controls input { padding:8px 10px; }
+  .lu-controls input[type=number] { width:80px; }
+  .lu-summary { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:11px 15px; font-size:13.5px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .lu-summary b { font-family:'Oswald',sans-serif; font-weight:600; letter-spacing:.3px; }
+  .lu-summary .warn { color:var(--flag); font-weight:500; }
+  .lu-board { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; }
+  .lu-row { display:grid; grid-template-columns:78px 1fr 1fr 1.5fr; gap:12px; padding:10px 14px; border-bottom:1px solid var(--line); align-items:start; }
+  .lu-row:last-child { border-bottom:none; }
+  .lu-row.head { background:color-mix(in srgb,var(--mat) 5%,var(--card)); font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft); font-weight:600; padding-top:9px; padding-bottom:9px; align-items:center; }
+  .lu-cls { font-family:'Oswald',sans-serif; font-size:20px; font-weight:600; letter-spacing:.3px; line-height:1.15; padding-top:4px; }
+  .lu-cls small { display:block; font-family:'Inter',sans-serif; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; }
+  .lu-cell { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .lu-cell .lab { display:none; font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-soft); font-weight:600; }
+  .lu-open { font-size:12.5px; color:var(--ink-soft); font-style:italic; padding:7px 0; }
+  .lu-open.vac { color:var(--absent); font-style:normal; font-weight:600; }
+  .lu-chip { display:flex; align-items:center; gap:9px; text-align:left; width:100%; border:1px solid var(--line); background:var(--canvas); color:var(--ink); border-radius:9px; padding:7px 10px; cursor:pointer; font-family:'Inter',sans-serif; min-width:0; }
+  .lu-chip:hover { border-color:var(--ink-soft); }
+  .lu-chip .avatar { width:28px; height:28px; font-size:11.5px; }
+  .lu-chip .lc-main { min-width:0; flex:1; }
+  .lu-chip .lc-name { font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lu-chip .lc-sub { font-size:11.5px; color:var(--ink-soft); line-height:1.35; margin-top:1px; }
+  .lu-chip .lc-sub .ov { color:var(--ink); font-weight:500; } .lu-chip .lc-sub .ok { color:var(--present); font-weight:500; }
+  .lu-chip .lc-sub .bad { color:var(--absent); font-weight:600; }
+  .lu-role { flex:none; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:.4px; padding:2px 7px; border-radius:5px; background:var(--line); color:var(--ink); }
+  .lu-role.V { background:var(--singlet); color:#fff; } .lu-role.JV { background:var(--mat); color:#f5f2ec; }
+  :root[data-theme="dark"] .lu-role.JV { background:#3a4a5a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lu-role.JV { background:#3a4a5a; } }
+  .lu-role.none { background:transparent; border:1px dashed var(--line); color:var(--ink-soft); }
+  .lu-cell.conflict { background:var(--flag-bg); border-radius:9px; padding:6px; margin:-6px; }
+  .lu-cell .cnote { font-size:11.5px; color:var(--flag); font-weight:600; }
+  .lu-side { margin-top:18px; }
+  .lu-side h3 { font-family:'Oswald',sans-serif; font-size:15px; letter-spacing:.4px; text-transform:uppercase; margin:0 0 8px; }
+  .lu-side .lu-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:8px; }
+  .lu-cap { font-size:11.5px; color:var(--ink-soft); margin-top:10px; }
+  .lu-loading { padding:30px; text-align:center; color:var(--ink-soft); }
+  @media (max-width:720px){
+    .lu-row { grid-template-columns:1fr; gap:8px; }
+    .lu-row.head { display:none; }
+    .lu-cell .lab { display:block; }
+    .lu-cls { display:flex; align-items:baseline; gap:8px; } .lu-cls small { display:inline; }
+    .lu-cell.lu-nil { display:none; }
+    .tabs { flex-wrap:wrap; }
+    .tab { padding:8px 12px; }
+    .tab-actions { margin-left:0; width:100%; justify-content:flex-start; }
+  }
+
+  /* ---- v1.6 lineup features ---- */
+  .lu-chip.st-ok   { border-left:4px solid var(--present); }
+  .lu-chip.st-near { border-left:4px solid var(--flag); }
+  .lu-chip.st-over { border-left:4px solid var(--absent); }
+  .lu-chip .trend { font-weight:600; white-space:nowrap; }
+  .lu-chip .trend.dn { color:var(--present); } .lu-chip .trend.up { color:var(--flag); }
+  .lu-badges { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .lu-badges .lb { font-size:10.5px; font-weight:600; padding:1px 6px; border-radius:4px; background:var(--line); color:var(--ink-soft); }
+  .lu-badges .lb.warn { background:var(--flag-bg); color:var(--flag); }
+  .lu-badges .lb.bad { background:color-mix(in srgb,var(--absent) 14%,var(--card)); color:var(--absent); }
+  .lu-legend { display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:var(--ink-soft); margin:-4px 0 12px; }
+  .lu-legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .lu-board.vfocus .lu-row { grid-template-columns:96px 1.45fr 1fr 1.25fr; }
+  .lu-board.whoon .lu-row { grid-template-columns:96px 1fr 1fr 1.5fr; }
+  .lu-board.vfocus.whoon .lu-row { grid-template-columns:96px 1.45fr 1fr 1.25fr; }
+  .lu-board.vfocus .lu-cell.vcell .lu-chip { background:var(--card); box-shadow:var(--shadow); padding:9px 12px; }
+  .lu-board.vfocus .lu-cell.vcell .lc-name { font-size:14.5px; }
+  .lu-board.vfocus .lu-cell:not(.vcell) .lu-chip { padding:5px 9px; }
+  .lu-board.vfocus .lu-cell:not(.vcell) .lc-name { font-size:12.5px; font-weight:600; }
+  .lu-board.vfocus .lu-cell:not(.vcell) .avatar { width:22px; height:22px; font-size:9.5px; }
+  button.lu-cls { background:none; border:none; color:inherit; text-align:left; cursor:pointer; padding:4px 0 0; font-family:'Oswald',sans-serif; font-size:20px; font-weight:600; }
+  button.lu-cls .who { display:block; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; color:var(--singlet); margin-top:4px; letter-spacing:0; white-space:nowrap; }
+  button.lu-cls:hover .who { text-decoration:underline; }
+  .lu-cls .iss { display:block; font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600; color:var(--flag); margin-top:3px; letter-spacing:0; line-height:1.3; }
+  .lu-empty { padding:26px; text-align:center; color:var(--ink-soft); font-size:13.5px; }
+  .lu-wide { max-width:560px; max-height:88vh; overflow-y:auto; }
+  .lu-quick { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:4px 0 6px; }
+  .lu-quick button { padding:12px 10px; border-radius:9px; border:1px solid var(--line); background:var(--canvas); color:var(--ink); font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.3px; cursor:pointer; }
+  .lu-quick button.cur { background:var(--mat); border-color:var(--mat); color:#f5f2ec; }
+  .lu-quick button:disabled { opacity:.45; cursor:default; }
+  .lu-quick .qh { grid-column:1 / -1; font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-soft); font-weight:600; margin-top:6px; }
+  #luMore { margin-top:12px; border-top:1px solid var(--line); padding-top:10px; }
+  #luMore summary { cursor:pointer; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; color:var(--singlet); margin-bottom:10px; }
+  .who-list { border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+  .who-row { display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid var(--line); }
+  .who-row:last-child { border-bottom:none; }
+  .who-row .avatar { width:30px; height:30px; font-size:12px; flex:none; }
+  .who-row .wm { flex:1; min-width:0; }
+  .who-row .wn { font-weight:600; font-size:14px; }
+  .who-row .ws { font-size:12px; color:var(--ink-soft); line-height:1.35; }
+  .who-row .ws .cut { color:var(--ink); font-weight:600; } .who-row .ws .ok { color:var(--present); font-weight:600; }
+  .who-row .wa { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .who-row .wa button { border:1px solid var(--line); background:var(--canvas); color:var(--ink); border-radius:7px; padding:6px 9px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .who-row .wa button.pri { background:var(--singlet); border-color:var(--singlet); color:#fff; }
+  .who-note { font-size:12px; color:var(--ink-soft); margin-top:10px; }
+  .print-area { background:#fff; color:#111; border-radius:10px; padding:22px; border:1px solid #ddd; }
+  .pc-head { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .pc-head img { height:58px; width:auto; }
+  .pc-team { font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.8px; text-transform:uppercase; color:#8b2231; }
+  .pc-title { font-family:'Oswald',sans-serif; font-size:24px; font-weight:600; line-height:1.15; color:#111; }
+  .pc-date { font-size:13px; color:#555; }
+  .pc-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  .pc-table th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:#666; border-bottom:2px solid #8b2231; padding:6px 8px; }
+  .pc-table td { padding:6px 8px; border-bottom:1px solid #e3e3e3; color:#111; vertical-align:top; }
+  .pc-table td.c { font-family:'Oswald',sans-serif; font-size:16px; font-weight:600; width:56px; }
+  .pc-table td.w { width:56px; color:#444; }
+  .pc-table td.jv { color:#555; }
+  .pc-table .open { color:#b3122b; font-weight:600; }
+  @media print {
+    body * { visibility:hidden !important; }
+    #printArea, #printArea * { visibility:visible !important; }
+    #printArea { position:absolute; left:0; top:0; width:100%; border:none; padding:0; }
+    .scrim { background:none !important; }
+    @page { margin:14mm; }
+  }
+  #lineupView .btn-row { flex-wrap:wrap; }
+  @media (max-width:720px){
+    .lu-board .lu-row, .lu-board.vfocus .lu-row, .lu-board.whoon .lu-row, .lu-board.vfocus.whoon .lu-row { grid-template-columns:1fr; }
+    button.lu-cls { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; width:100%; }
+    button.lu-cls small { display:inline; }
+    button.lu-cls .who { margin:0 0 0 auto; }
+    .lu-cls .iss { flex-basis:100%; margin-top:0; }
+    #lineupView .btn-row .ghost-btn { padding:8px 11px; font-size:12px; }
+    .who-row { flex-wrap:wrap; } .who-row .wa { width:100%; justify-content:flex-start; padding-left:40px; }
+  }
+
+  /* ---- v1.5: refresh, version, beta tag, help, backup ---- */
   .icon-btn { width:34px; padding:0; font-size:17px; line-height:34px; font-family:'Inter',sans-serif; text-transform:none; }
+  .beta-pill { display:inline-block; vertical-align:middle; margin-left:8px; background:var(--whistle); color:#3a2a05; font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:.6px; padding:2px 7px; border-radius:5px; position:relative; top:-2px; }
+  .foot { flex-wrap:wrap; }
+  .foot-right { margin-left:auto; display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .foot-right .linkbtn { font-size:12px; }
+  .ver { font-family:'Oswald',sans-serif; letter-spacing:.4px; }
+  .updbar { position:sticky; top:0; z-index:850; background:var(--singlet); color:#fff; padding:10px 16px; display:flex; align-items:center; justify-content:center; gap:14px; font-size:13.5px; font-weight:500; flex-wrap:wrap; }
+  .updbar button { background:#fff; color:var(--singlet); border:none; border-radius:7px; padding:6px 13px; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.4px; text-transform:uppercase; cursor:pointer; }
+  .gate-foot { margin-top:20px; font-size:12px; color:var(--ink-soft); }
+  .help-modal { max-width:620px; max-height:88vh; overflow-y:auto; }
+  .help-modal h4 { font-family:'Oswald',sans-serif; font-size:15px; letter-spacing:.4px; text-transform:uppercase; margin:20px 0 6px; color:var(--singlet); }
+  .help-modal h4:first-of-type { margin-top:6px; }
+  .help-modal p, .help-modal li { font-size:13.5px; line-height:1.55; color:var(--ink); }
+  .help-modal p { margin:0 0 8px; }
+  .help-modal ul, .help-modal ol { margin:0 0 8px; padding-left:20px; }
+  .help-modal li { margin-bottom:4px; }
+  .help-toc { display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 6px; }
+  .help-toc button { border:1px solid var(--line); background:var(--canvas); color:var(--ink); border-radius:999px; padding:5px 11px; font-size:12px; cursor:pointer; }
+  .changelog li b { font-family:'Oswald',sans-serif; letter-spacing:.3px; }
 
   /* ---- Missing weigh-in reminder ---- */
   .weigh.missing { border-color:var(--flag); box-shadow:0 0 0 2px color-mix(in srgb,var(--flag) 22%,transparent); }
@@ -355,13 +499,14 @@
 </head>
 <body>
 <div class="banner" id="banner"></div>
+<div class="updbar hidden" id="updBar"><span id="updText">A new version of Mat Room is available.</span><button id="updBtn">Refresh now</button></div>
 <header>
   <div class="header-inner">
     <div class="brand">
       <div class="mark logo">
   		 <img src="LOGAN.png" alt="Logan Grizzlies logo">
 	  </div>
-      <div><h1>MAT ROOM</h1><div class="sub">Practice attendance &amp; weigh-in</div></div>
+      <div><h1>MAT ROOM<span class="beta-pill hidden" id="betaPill">BETA</span></h1><div class="sub">Practice attendance &amp; weigh-in</div></div>
     </div>
     <div class="header-right">
       <button class="auth-btn icon-btn" id="refreshBtn" title="Refresh to get the latest version" aria-label="Refresh">↻</button>
@@ -385,6 +530,7 @@
   <div class="tabs">
     <button class="tab active" id="tabDay">Daily</button>
     <button class="tab" id="tabWeek">Weekly Summary</button>
+    <button class="tab" id="tabLineup">Lineup</button>
     <div class="viewbadge hidden" id="viewBadge">
       <svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       View only — sign in to edit
@@ -431,7 +577,35 @@
     <div class="rate-cap">Att. Rate counts scheduled practices where attendance was taken. Unmarked counts as missed; excused doesn’t count against a wrestler.</div>
   </div>
 
-  <div class="foot"><span class="dot" id="syncDot"></span><span id="syncText">Connecting…</span></div>
+  <div id="lineupView" class="hidden">
+    <div class="toolbar">
+      <div>
+        <h2>Projected lineup</h2>
+        <div class="hint">Built from each wrestler’s latest weigh-in and role. Tap a wrestler to change their role or class<span id="luHintWho">, or tap a class to see who can make it</span>.</div>
+      </div>
+      <div class="btn-row">
+        <button class="ghost-btn" id="luRefresh">Refresh weights</button>
+        <button class="ghost-btn" id="luPrint">Print lineup</button>
+        <button class="ghost-btn" id="luSaveBtn">Save lineup</button>
+        <button class="ghost-btn" id="luSavedBtn">Saved lineups</button>
+        <button class="ghost-btn" id="luExport">Export CSV</button>
+      </div>
+    </div>
+    <div class="lu-controls">
+      <div class="field"><label for="luMode">Place wrestlers by</label><select id="luMode"><option value="weight">Latest weigh-in</option><option value="class">Assigned weight class</option></select></div>
+      <div class="field" id="luAllowWrap"><label for="luAllow">Allowance over class (lb)</label><input id="luAllow" type="number" min="0" max="15" step="0.5" inputmode="decimal"></div>
+      <div class="field" id="luFilterWrap"><label for="luFilter">Show</label><select id="luFilter"><option value="all">All classes</option><option value="open">Open spots</option><option value="problems">Problems only</option></select></div>
+    </div>
+    <div class="lu-legend" id="luLegend"></div>
+    <div class="lu-summary" id="luSummary"></div>
+    <div class="lu-board" id="luBoard"><div class="lu-loading">Loading weigh-ins…</div></div>
+    <div class="lu-side hidden" id="luSide"></div>
+    <div class="lu-cap">Roles (V, JV, Extra) stay with the wrestler, so if their weight moves them to a new class, their role goes too. A class lock overrides the automatic placement. Wrestlers with a hydration test are never projected below their lowest eligible class.</div>
+  </div>
+
+  <div class="foot"><span class="dot" id="syncDot"></span><span id="syncText">Connecting…</span>
+    <span class="foot-right"><button class="linkbtn" id="helpBtn">Coach guide</button><button class="linkbtn" id="backupBtn">Download backup</button><span class="ver" id="verLabel"></span></span>
+  </div>
 </div>
 </div>
 
@@ -465,6 +639,61 @@
 </div>
 
 <datalist id="reasonList"></datalist>
+
+<div class="scrim" id="helpScrim">
+  <div class="modal help-modal" id="helpBody"></div>
+</div>
+
+<div class="scrim" id="luScrim">
+  <div class="modal">
+    <h3 id="luName">Wrestler</h3>
+    <p class="msub" id="luInfo"></p>
+    <div id="luQuick"></div>
+    <details id="luMore"><summary>More options</summary>
+      <div class="field"><label for="luRole">Role</label><select id="luRole"></select></div>
+      <div class="field"><label for="luLock">Lineup class</label><select id="luLock"></select></div>
+      <p class="msub" id="luWarn" style="color:var(--absent);margin-top:-4px"></p>
+      <div class="modal-actions" style="margin-top:4px"><button class="btn-save" id="luSave">Save</button></div>
+    </details>
+    <div class="modal-actions"><button class="btn-cancel" id="luProfile" style="margin-right:auto">Open profile</button><button class="btn-cancel" id="luCancel">Close</button></div>
+  </div>
+</div>
+
+<div class="scrim" id="luWho">
+  <div class="modal lu-wide">
+    <h3 id="whoTitle">Who can make it?</h3>
+    <p class="msub">Wrestlers whose latest weigh-in is within reach of this class, closest first.</p>
+    <div class="field" style="display:flex;align-items:center;gap:10px"><label for="whoReach" style="margin:0">Within</label><input id="whoReach" type="number" min="0" max="20" step="0.5" inputmode="decimal" style="width:80px"><span style="font-size:13px;color:var(--ink-soft)">lb over the class</span></div>
+    <div id="whoList" class="who-list"></div>
+    <div class="who-note" id="whoNote"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="whoClose">Close</button></div>
+  </div>
+</div>
+
+<div class="scrim" id="luCard">
+  <div class="modal lu-wide">
+    <div id="printArea" class="print-area"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="cardClose">Close</button><button class="btn-save" id="cardPrint">Print</button></div>
+  </div>
+</div>
+
+<div class="scrim" id="luSaveM">
+  <div class="modal">
+    <h3>Save this lineup</h3>
+    <p class="msub">Takes a snapshot of the current lineup, so you have a record of who wrestled where even as weights change.</p>
+    <div class="field"><label for="svName">Name</label><input id="svName" type="text" maxlength="60" placeholder="e.g. Dual vs. Sky View"></div>
+    <div class="field"><label for="svDate">Date</label><input id="svDate" type="date"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="svCancel">Cancel</button><button class="btn-save" id="svSave">Save lineup</button></div>
+  </div>
+</div>
+
+<div class="scrim" id="luList">
+  <div class="modal lu-wide">
+    <h3>Saved lineups</h3>
+    <div id="svList" class="ovlist" style="max-height:60vh"></div>
+    <div class="modal-actions"><button class="btn-cancel" id="svListClose">Close</button></div>
+  </div>
+</div>
 
 <!-- Wrestler Mode (kiosk) -->
 <div class="kiosk hidden" id="kiosk">
@@ -542,9 +771,32 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Refresh button: load a fresh copy of the page (skips any cached version), then tidy the address bar.
+/* ============================================================
+   APP VERSION — bump this on every update you upload.
+   Shown in the footer; open copies compare against it to offer
+   "New version available".
+   ============================================================ */
+const APP_VERSION = '1.6';
+
+/* ============================================================
+   LINEUP FEATURES — set any of these to false to turn that
+   feature off. Nothing else is affected.
+   ============================================================ */
+const LINEUP_FEATURES = {
+  colorStatus:  true,  // green / amber / red edge showing weight vs. class
+  trendArrows:  true,  // ↓ / ↑ weight change over the last 7 days
+  varsityFocus: true,  // bigger varsity column, compact JV and extras
+  filter:       true,  // "All / Open spots / Problems only" filter
+  whoCanMake:   true,  // tap a class to see who could make that weight
+  quickMoves:   true,  // one-tap role and class buttons on each wrestler
+  badges:       true,  // "No hydration test" and attendance-rate badges
+  printCard:    true,  // printable one-page lineup card
+  savedLineups: true   // save a lineup for a dual and view it later
+};
+const IS_BETA = /beta/i.test(firebaseConfig.projectId||'');
+// After a forced refresh (?r=...), tidy the address bar.
 if(/[?&]r=\d+/.test(location.search)){ try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
-document.getElementById('refreshBtn').onclick=()=>location.replace(location.pathname+'?r='+Date.now()+location.hash);
+/* ============================================================ */
 
 /* ============================================================
    COACH EMAILS — must match the list in firestore.rules.
@@ -616,6 +868,10 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   let prevToken=0;
   let kioskPinHash='', kioskOn=false, kSelId=null, kIdle=null, kDoneTimer=null, kDayTimer=null;
   const KIOSK_KEY='matroom-kiosk';
+  // Lineup: latest weigh-in per wrestler from the last LINEUP_SCAN_DAYS days.
+  const LINEUP_SCAN_DAYS=30, LINEUP_STALE_DAYS=14, MAX_EXTRAS=8;
+  const LINEUP_NEAR_LB=3, LINEUP_REACH_LB=5, LINEUP_UP_LB=10; // amber band, "who can make it" reach, how far under counts as moving up
+  let luHist={}, luDays={}, luLoaded=false, luLoading=false, luToken=0, luEditId=null, luFilter='all', whoCls=null, savedLineups=[];
   let hydro={}; // coach-only hydration test per wrestler (privateNotes/{id}.hydration)
 
   function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d-off*60000).toISOString().slice(0,10); }
@@ -660,6 +916,321 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     const d=r1(cur-hs.min);
     return d>=0 ? {cls:'above', txt:d+' above min'} : {cls:'below', txt:Math.abs(d)+' below min'};
   }
+  // ---- Lineup ----
+  function saveSettings(obj){ return fb.setDoc(settingsDoc(), obj, {merge:true}).catch(()=>banner('Could not save the lineup settings.',true)); }
+  const LF = LINEUP_FEATURES;
+  const STD_CLASSES=()=>WCLASSES.map(Number).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+  function roleRank(r){ if(r==='V') return 0; if(r==='JV') return 1; const m=/^X(\d+)$/.exec(r||''); return m?1+Number(m[1]):99; }
+  function roleShort(r){ if(r==='V') return 'V'; if(r==='JV') return 'JV'; const m=/^X(\d+)$/.exec(r||''); return m?'X'+m[1]:'—'; }
+  function roleLong(r){ if(r==='V') return 'Varsity'; if(r==='JV') return 'JV'; const m=/^X(\d+)$/.exec(r||''); return m?'Extra '+m[1]:'Unranked'; }
+  // Weigh-ins in the scan window (oldest first), with today's live weigh-in merged in.
+  function histFor(id){
+    const h=(luHist[id]||[]).slice(), t=todayStr(), rec=selDate===t?attendance[id]:null;
+    if(rec && validW(rec.weight)){ const i=h.findIndex(x=>x.date===t); if(i>=0) h[i]={date:t,weight:rec.weight}; else h.push({date:t,weight:rec.weight}); }
+    return h;
+  }
+  function latestWeight(id){ const h=histFor(id); return h.length?h[h.length-1]:null; }
+  function trendFor(id){
+    const h=histFor(id); if(h.length<2) return null;
+    const last=h[h.length-1], from=addDays(last.date,-7), ref=h.find(x=>x.date>=from && x.date<last.date);
+    if(!ref) return null;
+    return {d:r1(last.weight-ref.weight), days:daysBetween(ref.date,last.date)};
+  }
+  // Where a wrestler lands in the projected lineup, and why.
+  function placeFor(w){
+    const nums=STD_CLASSES(), hs=hydroSummary(hydro[w.id]), lowest=hs&&hs.lowest!=null?hs.lowest:null;
+    const lw=latestWeight(w.id), allow=schedule.lineupAllowance||0, t=targetOf(w);
+    const fromWeight=x=>nums.find(n=>x<=n+allow);
+    const fromClass=x=>nums.find(n=>n>=x);
+    let cls=null, how='', over=false;
+    if(w.lineupClass && !isNaN(Number(w.lineupClass))){ cls=Number(w.lineupClass); how='locked'; }
+    else if(schedule.lineupMode==='class' && t!=null){ cls=fromClass(t); how='class'; }
+    else if(lw){ cls=fromWeight(lw.weight); how='weight'; if(cls==null) over=true; }
+    else if(t!=null){ cls=fromClass(t); how='class-fallback'; }
+    let held=false;
+    if(how!=='locked' && cls!=null && lowest!=null && cls<lowest){ cls=lowest; held=true; }
+    const belowMin = how==='locked' && lowest!=null && cls<lowest;
+    const stale = lw ? daysBetween(lw.date, todayStr())>LINEUP_STALE_DAYS : false;
+    return {cls, how, over, held, belowMin, lw, stale, lowest};
+  }
+  function weightStatus(pl){
+    if(!pl.lw || pl.cls==null) return 'none';
+    const d=pl.lw.weight-pl.cls;
+    if(d<=0) return 'ok';
+    if(d<=Math.max(schedule.lineupAllowance||0, LINEUP_NEAR_LB)) return 'near';
+    return 'over';
+  }
+  function luDates(){ const out=[]; for(let i=0;i<LINEUP_SCAN_DAYS;i++) out.push(addDays(todayStr(),-i)); return out; }
+  function attRate(w){
+    const t=todayStr(), days={...luDays};
+    if(selDate===t) days[t]={...(days[t]||{}), ...attendance};
+    return rateFor(w, luDates(), days).pct;
+  }
+  async function loadLineupWeights(){
+    const myTok=++luToken; luLoading=true;
+    if(view==='lineup') renderLineup();
+    const hist={}, days={};
+    await Promise.all(luDates().map(d=>fb.getDocs(attCol(d)).then(snap=>{
+      snap.docs.forEach(x=>{ const v=x.data(); (days[d]=days[d]||{})[x.id]={status:v.status||null, weight:v.weight}; if(validW(v.weight)) (hist[x.id]=hist[x.id]||[]).push({date:d, weight:v.weight}); });
+    }).catch(()=>{})));
+    if(myTok!==luToken) return;
+    Object.values(hist).forEach(h=>h.sort((a,b)=>a.date<b.date?-1:1));
+    luHist=hist; luDays=days; luLoaded=true; luLoading=false;
+    if(view==='lineup') renderLineup();
+  }
+  function luChip(w, pl){
+    const r=w.lineupRole||'';
+    let sub='';
+    if(pl.lw){
+      const v=pl.cls!=null?r1(pl.lw.weight-pl.cls):null;
+      sub=`${pl.lw.weight} lb, ${medDate(pl.lw.date)}`;
+      if(v!=null) sub+= v>0 ? `, <span class="ov">${v} over</span>` : `, <span class="ok">${v===0?'on weight':Math.abs(v)+' under'}</span>`;
+    } else sub='No recent weigh-in';
+    if(LF.trendArrows){ const t=trendFor(w.id); if(t && t.d!==0) sub+=` <span class="trend ${t.d<0?'dn':'up'}" title="Change over the last ${t.days} days">${t.d<0?'↓':'↑'} ${Math.abs(t.d)} lb/${t.days}d</span>`; }
+    const tags=[];
+    if(pl.how==='locked') tags.push('🔒 locked');
+    if(pl.held) tags.push('held at min');
+    if(pl.stale) tags.push('old weigh-in');
+    if(pl.how==='class-fallback') tags.push('by assigned class');
+    if(pl.belowMin) sub+=`, <span class="bad">below min (${pl.lowest})</span>`;
+    if(tags.length) sub+=', '+tags.join(', ');
+    let badges='';
+    if(LF.badges){
+      const b=[], h=hydro[w.id], hs=hydroSummary(h);
+      if(!h) b.push('<span class="lb warn">No hydration test</span>');
+      else if(hs && hs.passed===false) b.push('<span class="lb bad">Hydration failed</span>');
+      const ar=attRate(w); if(ar!=null) b.push(`<span class="lb ${ar<75?'warn':''}" title="Practice attendance, last ${LINEUP_SCAN_DAYS} days">Att ${ar}%</span>`);
+      if(b.length) badges=`<div class="lu-badges">${b.join('')}</div>`;
+    }
+    const st=LF.colorStatus?' st-'+weightStatus(pl):'';
+    return `<button class="lu-chip${st}" data-lu="${w.id}"><div class="avatar" style="background:${colorFor(w.id)}">${initials(w.name)}</div><div class="lc-main"><div class="lc-name">${escapeHtml(w.name)}</div><div class="lc-sub">${sub}</div>${badges}</div><span class="lu-role ${r==='V'?'V':r==='JV'?'JV':r?'':'none'}">${roleShort(r)}</span></button>`;
+  }
+  function lineupData(){
+    const nums=STD_CLASSES(), byCls={}, over=[], unplaced=[];
+    nums.forEach(n=>byCls[n]=[]);
+    roster.forEach(w=>{
+      const pl=placeFor(w);
+      if(pl.over) over.push({w,pl});
+      else if(pl.cls==null) unplaced.push({w,pl});
+      else (byCls[pl.cls]=byCls[pl.cls]||[]).push({w,pl});
+    });
+    Object.values(byCls).forEach(list=>list.sort((a,b)=>roleRank(a.w.lineupRole)-roleRank(b.w.lineupRole) || (a.w.name||'').localeCompare(b.w.name||'')));
+    return {nums, byCls, over, unplaced};
+  }
+  const ISSUE_TXT={dupV:'2+ varsity', dupJV:'2+ JV', belowMin:'Locked below min weight', vOver:'Varsity over weight', vNoHydro:'Varsity needs hydration test', vStale:'Varsity weigh-in is old'};
+  function classIssues(list){
+    const v=list.filter(x=>x.w.lineupRole==='V'), jv=list.filter(x=>x.w.lineupRole==='JV'), iss=[];
+    if(!v.length) iss.push('open');
+    if(v.length>1) iss.push('dupV');
+    if(jv.length>1) iss.push('dupJV');
+    if(list.some(x=>x.pl.belowMin)) iss.push('belowMin');
+    if(v.some(x=>weightStatus(x.pl)==='over')) iss.push('vOver');
+    if(LF.badges && v.some(x=>!hydro[x.w.id])) iss.push('vNoHydro');
+    if(v.some(x=>x.pl.stale || !x.pl.lw)) iss.push('vStale');
+    return iss;
+  }
+  function renderLineup(){
+    $('#luMode').value=schedule.lineupMode||'weight';
+    if(document.activeElement!==$('#luAllow')) $('#luAllow').value=schedule.lineupAllowance||0;
+    $('#luAllowWrap').classList.toggle('hidden', schedule.lineupMode==='class');
+    $('#luFilterWrap').classList.toggle('hidden', !LF.filter);
+    if(LF.filter) $('#luFilter').value=luFilter;
+    $('#luHintWho').classList.toggle('hidden', !LF.whoCanMake);
+    $('#luPrint').classList.toggle('hidden', !LF.printCard);
+    $('#luSaveBtn').classList.toggle('hidden', !LF.savedLineups);
+    $('#luSavedBtn').classList.toggle('hidden', !LF.savedLineups);
+    const near=Math.max(schedule.lineupAllowance||0, LINEUP_NEAR_LB);
+    $('#luLegend').classList.toggle('hidden', !LF.colorStatus);
+    if(LF.colorStatus) $('#luLegend').innerHTML=`<span><i style="background:var(--present)"></i>At or under class</span><span><i style="background:var(--flag)"></i>Within ${near} lb</span><span><i style="background:var(--absent)"></i>More than ${near} lb over</span>`;
+    const board=$('#luBoard');
+    board.className='lu-board'+(LF.varsityFocus?' vfocus':'')+(LF.whoCanMake?' whoon':'');
+    if(!luLoaded){ board.innerHTML='<div class="lu-loading">Loading weigh-ins…</div>'; $('#luSummary').textContent=''; return; }
+    const {nums, byCls, over, unplaced}=lineupData();
+    const filt = LF.filter ? luFilter : 'all';
+    let html=`<div class="lu-row head"><div>Class</div><div>Varsity</div><div>JV</div><div>Extras &amp; unranked</div></div>`;
+    let filled=0, shown=0, attention=0; const open=[], dup=[];
+    nums.forEach(n=>{
+      const list=byCls[n]||[], v=list.filter(x=>x.w.lineupRole==='V'), jv=list.filter(x=>x.w.lineupRole==='JV'), rest=list.filter(x=>x.w.lineupRole!=='V' && x.w.lineupRole!=='JV');
+      const iss=classIssues(list);
+      if(v.length) filled++; else open.push(n);
+      if(v.length>1) dup.push(n);
+      const probs=iss.filter(i=>i!=='open');
+      if(probs.length) attention++;
+      if(filt==='open' && !iss.includes('open')) return;
+      if(filt==='problems' && !iss.length) return;
+      shown++;
+      const cell=(items,lab,emptyTxt,vac,conf,vcell)=>`<div class="lu-cell ${vcell?'vcell':''} ${conf?'conflict':''} ${(!items.length&&!vac)?'lu-nil':''}"><span class="lab">${lab}</span>${conf?`<span class="cnote">⚠ ${items.length} ${lab==='Varsity'?'varsity':'JV'} at ${n}</span>`:''}${items.length?items.map(x=>luChip(x.w,x.pl)).join(''):`<div class="lu-open ${vac?'vac':''}">${emptyTxt}</div>`}</div>`;
+      const issTxt=probs.filter(i=>i!=='dupV'&&i!=='dupJV').map(i=>ISSUE_TXT[i]).join(', ');
+      const clsInner=`${n}<small>${list.length} wrestler${list.length===1?'':'s'}</small>${issTxt?`<span class="iss">${issTxt}</span>`:''}`;
+      const clsHtml = LF.whoCanMake ? `<button class="lu-cls" data-who="${n}" title="Who can make ${n}?">${clsInner}<span class="who">Who fits? ›</span></button>` : `<div class="lu-cls">${clsInner}</div>`;
+      html+=`<div class="lu-row">${clsHtml}${cell(v,'Varsity', list.length?'No varsity set':'Open', true, v.length>1, true)}${cell(jv,'JV','—',false,jv.length>1,false)}${cell(rest,'Extras','—',false,false,false)}</div>`;
+    });
+    if(!shown) html+=`<div class="lu-empty">${filt==='open'?'Every class has a varsity wrestler.':'Nothing needs attention right now.'}</div>`;
+    board.innerHTML=html;
+    let sum=`<b>${filled} of ${nums.length}</b> varsity spots filled.`;
+    if(open.length) sum+=` Open: ${open.join(', ')}.`;
+    if(dup.length) sum+=` <span class="warn">Two or more varsity at ${dup.join(', ')}.</span>`;
+    if(attention && LF.filter) sum+=` <span class="warn">${attention} class${attention===1?'':'es'} need${attention===1?'s':''} attention.</span>`;
+    if(schedule.lineupMode!=='class') sum+=` Placement uses each wrestler’s latest weigh-in${schedule.lineupAllowance?` with a ${schedule.lineupAllowance} lb allowance`:''}.`;
+    else sum+=` Placement uses each wrestler’s assigned weight class.`;
+    if(luLoading) sum+=' Refreshing…';
+    $('#luSummary').innerHTML=sum;
+    const side=$('#luSide'); let sh='';
+    if(over.length) sh+=`<h3>Over ${nums[nums.length-1]}</h3><div class="lu-grid">${over.map(x=>luChip(x.w,x.pl)).join('')}</div>`;
+    if(unplaced.length) sh+=`<h3 style="margin-top:${over.length?'16px':'0'}">Not placed</h3><div class="pchart-cap" style="text-align:left;margin:-4px 0 8px">No weigh-in in the last ${LINEUP_SCAN_DAYS} days and no weight class set.</div><div class="lu-grid">${unplaced.map(x=>luChip(x.w,x.pl)).join('')}</div>`;
+    side.innerHTML=sh; side.classList.toggle('hidden', !sh);
+    document.querySelectorAll('#lineupView [data-lu]').forEach(b=>b.onclick=()=>openLineupEdit(b.dataset.lu));
+    document.querySelectorAll('#lineupView [data-who]').forEach(b=>b.onclick=()=>openWho(Number(b.dataset.who)));
+  }
+  // ---- Wrestler editor (quick moves + full options) ----
+  function nextExtra(cls, exceptId){
+    let max=0;
+    roster.forEach(w=>{ if(w.id===exceptId) return; const m=/^X(\d+)$/.exec(w.lineupRole||''); if(m && placeFor(w).cls===cls) max=Math.max(max,Number(m[1])); });
+    return Math.min(max+1, MAX_EXTRAS);
+  }
+  async function applyLineup(id, fields, msg){
+    try{
+      await updateProfile(id, fields);
+      const w=roster.find(r=>r.id===id); if(w) Object.assign(w, fields);
+      $('#luScrim').classList.remove('open'); luEditId=null;
+      renderLineup(); if($('#luWho').classList.contains('open')) renderWho();
+      if(msg) banner(msg);
+    } catch(e){ banner('Could not save the lineup change.', true); }
+  }
+  function openLineupEdit(id){
+    const w=roster.find(r=>r.id===id); if(!w||!canEdit) return;
+    luEditId=id;
+    const auto=placeFor({...w, lineupClass:''}), cur=placeFor(w), lw=cur.lw;
+    $('#luName').textContent=w.name;
+    $('#luInfo').textContent = (lw?`Latest weigh-in ${lw.weight} lb on ${medDate(lw.date)}.`:'No weigh-in in the last '+LINEUP_SCAN_DAYS+' days.') + (w.wclass?` Assigned class ${w.wclass}.`:'') + (cur.lowest!=null?` Lowest eligible class ${cur.lowest}.`:'') + (cur.cls!=null?` In the lineup at ${cur.cls}${cur.how==='locked'?' (locked)':''}.`:'');
+    const roles=[['','Unranked'],['V','Varsity'],['JV','JV']]; for(let i=1;i<=MAX_EXTRAS;i++) roles.push(['X'+i,'Extra '+i]);
+    $('#luRole').innerHTML=roles.map(([v,l])=>`<option value="${v}" ${String(w.lineupRole||'')===v?'selected':''}>${l}</option>`).join('');
+    const autoTxt = auto.over ? 'Auto (over '+STD_CLASSES().slice(-1)[0]+')' : auto.cls!=null ? 'Auto (projected '+auto.cls+')' : 'Auto (not placed)';
+    $('#luLock').innerHTML=`<option value="">${autoTxt}</option>`+STD_CLASSES().map(n=>`<option value="${n}" ${String(w.lineupClass||'')===String(n)?'selected':''}>Lock at ${n}</option>`).join('');
+    const warn=()=>{ const v=$('#luLock').value; $('#luWarn').textContent = (v && cur.lowest!=null && Number(v)<cur.lowest) ? `${v} is below this wrestler’s lowest eligible class (${cur.lowest}).` : ''; };
+    $('#luLock').onchange=warn; warn();
+    const q=$('#luQuick');
+    if(LF.quickMoves){
+      const nums=STD_CLASSES(), i=cur.cls!=null?nums.indexOf(cur.cls):-1;
+      const up=i>=0&&i<nums.length-1?nums[i+1]:null, down=i>0?nums[i-1]:null;
+      const downBlocked = down!=null && cur.lowest!=null && down<cur.lowest;
+      const r=w.lineupRole||'', xn=nextExtra(cur.cls, id);
+      const isX=/^X\d+$/.test(r);
+      q.innerHTML=`<div class="lu-quick">
+        <div class="qh">Role</div>
+        <button data-qr="V" class="${r==='V'?'cur':''}">Varsity</button>
+        <button data-qr="JV" class="${r==='JV'?'cur':''}">JV</button>
+        <button data-qr="${isX?r:'X'+xn}" class="${isX?'cur':''}">${isX?roleLong(r):'Extra '+xn}</button>
+        <button data-qr="" class="${!r?'cur':''}">Unranked</button>
+        <div class="qh">Class</div>
+        <button data-ql="${up??''}" ${up==null?'disabled':''}>${up!=null?'Move up to '+up:'Already top class'}</button>
+        <button data-ql="${down??''}" ${down==null||downBlocked?'disabled':''}>${down==null?'Already lightest':downBlocked?down+' is below min':'Move down to '+down}</button>
+        ${cur.how==='locked'?`<button data-ql="__auto" style="grid-column:1 / -1">Back to automatic (${auto.over?'over '+nums[nums.length-1]:auto.cls??'not placed'})</button>`:''}
+      </div>`;
+      q.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>applyLineup(id,{lineupRole:b.dataset.qr}, w.name+' is now '+roleLong(b.dataset.qr)+'.'));
+      q.querySelectorAll('[data-ql]').forEach(b=>b.onclick=()=>{ const v=b.dataset.ql==='__auto'?'':b.dataset.ql; applyLineup(id,{lineupClass:v}, v?w.name+' locked at '+v+'.':w.name+' is back to automatic placement.'); });
+      q.classList.remove('hidden'); $('#luMore').open=false;
+    } else { q.innerHTML=''; q.classList.add('hidden'); $('#luMore').open=true; }
+    $('#luScrim').classList.add('open');
+  }
+  async function saveLineupEdit(){
+    const id=luEditId; if(!id) return;
+    $('#luSave').disabled=true;
+    await applyLineup(id, {lineupRole:$('#luRole').value, lineupClass:$('#luLock').value});
+    $('#luSave').disabled=false;
+  }
+  // ---- Who can make this weight? ----
+  function openWho(n){ if(!LF.whoCanMake) return; whoCls=n; $('#whoReach').value=LINEUP_REACH_LB; renderWho(); $('#luWho').classList.add('open'); }
+  function renderWho(){
+    const n=whoCls; if(n==null) return;
+    const reach=Math.max(0, parseFloat($('#whoReach').value)||0);
+    $('#whoTitle').textContent='Who can make '+n+'?';
+    const rows=[], blocked=[];
+    roster.forEach(w=>{
+      const pl=placeFor(w), lw=pl.lw; if(!lw) return;
+      const d=r1(lw.weight-n); if(d>reach || d< -LINEUP_UP_LB) return;
+      if(pl.lowest!=null && n<pl.lowest){ blocked.push({w,pl}); return; }
+      rows.push({w,pl,d});
+    });
+    rows.sort((a,b)=>Math.abs(a.d)-Math.abs(b.d) || roleRank(a.w.lineupRole)-roleRank(b.w.lineupRole));
+    const el=$('#whoList');
+    if(!rows.length) el.innerHTML=`<div class="ovempty">Nobody within ${reach} lb of ${n}. Try a bigger number above.</div>`;
+    else el.innerHTML=rows.map(({w,pl,d})=>{
+      const t=LF.trendArrows?trendFor(w.id):null;
+      const dTxt = d>0?`<span class="cut">${d} lb to cut</span>`:d<0?`${Math.abs(d)} under, moving up`:`<span class="ok">on weight</span>`;
+      const now = pl.cls!=null?`now ${pl.cls}${pl.how==='locked'?' (locked)':''}, ${roleLong(w.lineupRole||'')}`:pl.over?'now over the top class':'not placed';
+      const here = String(w.lineupClass||'')===String(n);
+      const acts = here ? `<button data-wu="${w.id}">Unlock</button>` : `<button data-wl="${w.id}">Lock here</button><button class="pri" data-wv="${w.id}">Lock as varsity</button>`;
+      return `<div class="who-row"><div class="avatar" style="background:${colorFor(w.id)}">${initials(w.name)}</div><div class="wm"><div class="wn">${escapeHtml(w.name)}${here?' 🔒':''}</div><div class="ws">${pl.lw.weight} lb (${medDate(pl.lw.date)}), ${dTxt}${t&&t.d?`, ${t.d<0?'↓':'↑'} ${Math.abs(t.d)} lb/${t.days}d`:''}<br>${now}</div></div><div class="wa">${acts}</div></div>`;
+    }).join('');
+    $('#whoNote').textContent = blocked.length ? `Not eligible at ${n} because of their hydration minimum: ${blocked.map(x=>x.w.name+' (lowest '+x.pl.lowest+')').join(', ')}.` : '';
+    el.querySelectorAll('[data-wl]').forEach(b=>b.onclick=()=>{ const w=roster.find(r=>r.id===b.dataset.wl); applyLineup(w.id,{lineupClass:String(n)}, w.name+' locked at '+n+'.'); });
+    el.querySelectorAll('[data-wv]').forEach(b=>b.onclick=()=>{ const w=roster.find(r=>r.id===b.dataset.wv); applyLineup(w.id,{lineupClass:String(n), lineupRole:'V'}, w.name+' locked at '+n+' as varsity.'); });
+    el.querySelectorAll('[data-wu]').forEach(b=>b.onclick=()=>{ const w=roster.find(r=>r.id===b.dataset.wu); applyLineup(w.id,{lineupClass:''}, w.name+' is back to automatic placement.'); });
+  }
+  // ---- Print card ----
+  function currentCardRows(){
+    const {nums, byCls}=lineupData();
+    return nums.map(n=>{
+      const list=byCls[n]||[];
+      const pick=f=>list.filter(f).map(x=>({name:x.w.name, weight:x.pl.lw?x.pl.lw.weight:null, role:x.w.lineupRole||''}));
+      return {cls:n, v:pick(x=>x.w.lineupRole==='V'), jv:pick(x=>x.w.lineupRole==='JV'), x:pick(x=>/^X\d+$/.test(x.w.lineupRole||''))};
+    });
+  }
+  function cardHtml(rows, title, date){
+    const body=rows.map(r=>`<tr><td class="c">${r.cls}</td><td>${r.v.length?r.v.map(x=>escapeHtml(x.name)).join(' / '):'<span class="open">Open</span>'}</td><td class="w">${r.v.length&&r.v[0].weight!=null?r.v[0].weight:''}</td><td class="jv">${r.jv.map(x=>escapeHtml(x.name)).join(' / ')}</td></tr>`).join('');
+    return `<div class="pc-head"><img src="LOGAN.png" alt=""><div><div class="pc-team">Logan Wrestling</div><div class="pc-title">${escapeHtml(title)}</div><div class="pc-date">${date?escapeHtml(prettyDate(date)):''}</div></div></div>
+      <table class="pc-table"><thead><tr><th>Class</th><th>Varsity</th><th>Wt</th><th>JV</th></tr></thead><tbody>${body}</tbody></table>`;
+  }
+  function openCard(rows, title, date){ $('#printArea').innerHTML=cardHtml(rows,title,date); $('#luCard').classList.add('open'); }
+  // ---- Saved lineups (stored in settings/lineups, covered by the existing settings rule) ----
+  const lineupsDoc=()=>fb.doc(fdb,'settings','lineups');
+  async function fetchSaved(){
+    const snap=await fb.getDocs(fb.collection(fdb,'settings'));
+    const d=snap.docs.find(x=>x.id==='lineups');
+    savedLineups = d && Array.isArray(d.data().items) ? d.data().items : [];
+    return savedLineups;
+  }
+  function openSaveLineup(){ $('#svName').value=''; $('#svDate').value=todayStr(); $('#luSaveM').classList.add('open'); setTimeout(()=>$('#svName').focus(),50); }
+  async function saveLineupSnapshot(){
+    const name=$('#svName').value.trim()||'Lineup', date=$('#svDate').value||todayStr();
+    $('#svSave').disabled=true;
+    try{
+      await fetchSaved();
+      const item={id:'L'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name, date, created:Date.now(), by:user&&user.email, rows:currentCardRows()};
+      await fb.setDoc(lineupsDoc(), {items:[item, ...savedLineups]});
+      savedLineups=[item, ...savedLineups];
+      $('#luSaveM').classList.remove('open'); banner('Saved “'+name+'”.');
+    } catch(e){ banner('Could not save the lineup.', true); }
+    finally{ $('#svSave').disabled=false; }
+  }
+  async function openSavedList(){
+    const el=$('#svList'); el.innerHTML='<div class="ovempty">Loading…</div>'; $('#luList').classList.add('open');
+    try{ await fetchSaved(); } catch(e){ el.innerHTML='<div class="ovempty">Could not load saved lineups.</div>'; return; }
+    renderSavedList();
+  }
+  function renderSavedList(){
+    const el=$('#svList'), items=savedLineups.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'') || (b.created||0)-(a.created||0));
+    if(!items.length){ el.innerHTML='<div class="ovempty">No saved lineups yet. Use “Save lineup” before a dual or tournament.</div>'; return; }
+    el.innerHTML=items.map(it=>`<div class="ovrow"><span><b>${escapeHtml(it.name)}</b><br><span style="font-size:12px;color:var(--ink-soft)">${escapeHtml(shortDate(it.date))}${it.by?', saved by '+escapeHtml(it.by):''}</span></span><span style="display:flex;gap:12px"><button class="linkbtn" data-sv="${it.id}">View</button><button class="linkbtn" data-sd="${it.id}" style="color:var(--ink-soft)">Delete</button></span></div>`).join('');
+    el.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{ const it=savedLineups.find(x=>x.id===b.dataset.sv); if(it){ $('#luList').classList.remove('open'); openCard(it.rows, it.name, it.date); } });
+    el.querySelectorAll('[data-sd]').forEach(b=>b.onclick=async()=>{
+      const it=savedLineups.find(x=>x.id===b.dataset.sd); if(!it || !confirm('Delete the saved lineup “'+it.name+'”?')) return;
+      try{ await fetchSaved(); savedLineups=savedLineups.filter(x=>x.id!==it.id); await fb.setDoc(lineupsDoc(), {items:savedLineups}); renderSavedList(); }
+      catch(e){ banner('Could not delete the saved lineup.', true); }
+    });
+  }
+  function exportLineupCSV(){
+    const {nums, byCls, over, unplaced}=lineupData();
+    const rows=[['Class','Role','Wrestler','Latest Weight (lb)','Weigh-in Date','Vs Class','Placement']];
+    const how=pl=>pl.how==='locked'?'Locked by coach':pl.held?'Held at min weight':pl.how==='class'?'Assigned class':pl.how==='class-fallback'?'Assigned class (no recent weigh-in)':'Latest weigh-in';
+    const line=(c,x)=>{ const lw=x.pl.lw, v=(lw&&c!=='')?r1(lw.weight-Number(c)):''; rows.push([c, roleLong(x.w.lineupRole||''), x.w.name, lw?lw.weight:'', lw?lw.date:'', v===''||isNaN(v)?'':(v>0?'+'+v:v), how(x.pl)]); };
+    nums.forEach(n=>{ const list=byCls[n]||[]; if(!list.some(x=>x.w.lineupRole==='V')) rows.push([n,'Varsity','(open)','','','','']); list.forEach(x=>line(n,x)); });
+    over.forEach(x=>line('Over '+nums[nums.length-1],x));
+    unplaced.forEach(x=>line('Not placed',x));
+    downloadCSV(rows, 'lineup_'+todayStr()+'.csv');
+  }
+
   // ---- Practice schedule ----
   function isPractice(d){
     const o=schedule.overrides[d];
@@ -682,6 +1253,101 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     return {attended, counted, unmarked, pct: counted?Math.round(attended/counted*100):null};
   }
   function banner(msg, isErr){ const b=$('#banner'); b.textContent=msg; b.className='banner show'+(isErr?' err':''); clearTimeout(banner._t); banner._t=setTimeout(()=>b.classList.remove('show'),5000); }
+
+  // ---- v1.5: refresh, version check, help, backup ----
+  // Load a fresh copy of the page, skipping any cached version.
+  function hardRefresh(){ location.replace(location.pathname+'?r='+Date.now()+location.hash); }
+  async function checkForUpdate(){
+    try{
+      const r=await fetch(location.pathname+'?v='+Date.now(), {cache:'no-store'});
+      if(!r.ok) return;
+      const m=/APP_VERSION\s*=\s*['"]([^'"]+)['"]/.exec(await r.text());
+      if(m && m[1]!==APP_VERSION){ $('#updText').textContent='Version '+m[1]+' of Mat Room is available (you have '+APP_VERSION+').'; $('#updBar').classList.remove('hidden'); }
+    }catch(e){}
+  }
+  const HELP_SECTIONS=[
+    ['install','Install on your phone', `<p>Mat Room works like an app from your home screen, with no browser bar.</p>
+      <ul><li><b>iPhone / iPad:</b> open the site in <b>Safari</b>, tap <b>Share</b> (square with an arrow), then <b>Add to Home Screen</b>.</li>
+      <li><b>Android:</b> open the site in <b>Chrome</b>, tap the <b>⋮</b> menu, then <b>Add to Home screen</b> or <b>Install app</b>.</li></ul>
+      <p>Use the <b>↻</b> button in the top bar to refresh. If a red bar says a new version is available, tap <b>Refresh now</b>.</p>`],
+    ['daily','Daily attendance & weigh-ins', `<ul><li>Pick the date at the top right, or tap <b>Today</b>.</li>
+      <li>Tap <b>Present</b>, <b>Absent</b>, or <b>Excused</b>. Tap the same button again to clear it.</li>
+      <li>Type the weigh-in in the box. It saves automatically.</li>
+      <li>For Absent or Excused, a <b>Reason</b> box appears. Reasons are only visible to coaches.</li>
+      <li>An amber box and “Needs weigh-in” mean someone is marked Present at practice without a weight.</li>
+      <li>Tap a wrestler’s name to open their profile.</li></ul>`],
+    ['kiosk','Wrestler Mode (self check-in)', `<ol><li>Tap <b>Wrestler Mode</b>. The first time, set a 4-digit coach PIN.</li>
+      <li>Hand the device over. Wrestlers find their name, enter their weight, and tap <b>Check in</b>. That marks them Present.</li>
+      <li>To leave, tap <b>Coach</b> and enter the PIN.</li></ol>
+      <p>Forgot the PIN? Set a new one from your own device under <b>Schedule → Wrestler Mode PIN</b>.</p>
+      <p>Tip: on an iPad, turn on <b>Guided Access</b> (Settings → Accessibility) so kids can’t leave the app. On Android, use <b>Screen pinning</b>.</p>`],
+    ['lineup','Lineup', `<ul><li>Each wrestler is placed in the lightest class their latest weigh-in makes.</li>
+      <li><b>Allowance</b> counts wrestlers within that many pounds of a class (practice weights usually run high).</li>
+      <li>Switch <b>Place wrestlers by</b> to use each wrestler’s assigned class instead.</li>
+      <li>Tap a wrestler to set their role (Varsity, JV, Extra 1–8) or <b>lock</b> them at a class.</li>
+      <li>Wrestlers with a hydration test are never projected below their lowest eligible class.</li>
+      <li>An amber box means two varsity at the same weight. “Open” means no varsity yet.</li>
+      <li>The colored edge on each wrestler shows weight vs. class: green is at or under, amber is close, red is further over. Arrows show the change over the last week.</li>
+      <li>Tap a <b>class number</b> to see who could make that weight, and lock someone there in one tap.</li>
+      <li>Use <b>Show: Problems only</b> to see just the classes that need a decision.</li>
+      <li><b>Print lineup</b> makes a one-page lineup card. <b>Save lineup</b> keeps a snapshot for a dual or tournament, which you can reopen under <b>Saved lineups</b>.</li></ul>`],
+    ['profiles','Profiles & hydration tests', `<ul><li>In a profile, tap <b>Edit profile</b> to change name, class, grade, and contact info.</li>
+      <li>Record a hydration test (specific gravity, weight, body fat %) to calculate minimum weight and lowest eligible class. If your state gives an official minimum, enter it to override the calculation.</li></ul>`],
+    ['schedule','Schedule & attendance rate', `<ul><li><b>Schedule</b> sets practice days and the season start. Cancel or add a single date from the Daily tab.</li>
+      <li>Attendance rate counts scheduled practices where attendance was taken. Unmarked counts as missed; excused doesn’t count against a wrestler.</li></ul>`],
+    ['backup','Backups', `<p>Tap <b>Download backup</b> at the bottom of the page about once a month. It saves the whole season (roster, attendance, weigh-ins, absence reasons, hydration tests, schedule) as one file. Keep it somewhere safe, like Google Drive.</p>
+      <p>The file holds private information about students, so don’t share it outside the coaching staff.</p>`],
+  ];
+  function openHelp(section){
+    const toc=HELP_SECTIONS.map(([id,t])=>`<button data-hs="${id}">${t}</button>`).join('');
+    const body=HELP_SECTIONS.map(([id,t,h])=>{
+      return `<h4 id="hs-${id}">${t}</h4>${h}`;
+    }).join('');
+    $('#helpBody').innerHTML=`<h3>Coach guide</h3><p class="msub">Mat Room v${APP_VERSION}${IS_BETA?' (beta)':''}</p><div class="help-toc">${toc}</div>${body}<div class="modal-actions"><button class="btn-save" id="helpClose">Close</button></div>`;
+    $('#helpBody').querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{ const el=document.getElementById('hs-'+b.dataset.hs); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); });
+    $('#helpClose').onclick=closeHelp;
+    $('#helpScrim').classList.add('open');
+    if(section){ const el=document.getElementById('hs-'+section); if(el) setTimeout(()=>el.scrollIntoView({block:'start'}),30); } else $('#helpBody').scrollTop=0;
+  }
+  function closeHelp(){ $('#helpScrim').classList.remove('open'); }
+  let backingUp=false;
+  async function downloadBackup(){
+    if(!canEdit || backingUp) return;
+    backingUp=true;
+    const btn=$('#backupBtn'), label=btn.textContent;
+    try{
+      const today=todayStr();
+      let from = schedule.seasonStart || addDays(today,-SEASON_SCAN_DAYS);
+      if(from < addDays(today,-400)) from=addDays(today,-400);
+      const dates=[]; for(let d=from; d<=today; d=addDays(d,1)) dates.push(d);
+      const attendanceOut={}; let done=0;
+      for(let i=0;i<dates.length;i+=15){
+        const chunk=dates.slice(i,i+15);
+        await Promise.all(chunk.map(d=>fb.getDocs(attCol(d)).then(snap=>{
+          if(snap.docs.length){ attendanceOut[d]={}; snap.docs.forEach(x=>attendanceOut[d][x.id]=x.data()); }
+        })));
+        done+=chunk.length; btn.textContent='Backing up… '+Math.round(done/dates.length*100)+'%';
+      }
+      const rosterSnap=await fb.getDocs(rosterCol());
+      const notesSnap=await fb.getDocs(fb.collection(fdb,'privateNotes'));
+      const setSnap=await fb.getDocs(fb.collection(fdb,'settings'));
+      const settingsOut={}; setSnap.docs.forEach(x=>{ const v={...x.data()}; delete v.kioskPinHash; settingsOut[x.id]=v; });
+      const out={
+        app:'Mat Room', version:APP_VERSION, database:firebaseConfig.projectId,
+        exportedAt:new Date().toISOString(), exportedBy:user&&user.email, range:{from, to:today},
+        roster:rosterSnap.docs.map(x=>({id:x.id, ...x.data()})),
+        attendance:attendanceOut,
+        privateNotes:Object.fromEntries(notesSnap.docs.map(x=>[x.id, x.data()])),
+        settings:settingsOut
+      };
+      const blob=new Blob([JSON.stringify(out,null,1)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='matroom-'+(IS_BETA?'beta-':'')+'backup-'+today+'.json';
+      document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+      banner('Backup downloaded: '+out.roster.length+' wrestlers, '+Object.keys(attendanceOut).length+' days of attendance.');
+    } catch(e){ banner('Backup failed. Check your connection and try again.', true); }
+    finally{ backingUp=false; btn.textContent=label; }
+  }
 
   // ---- Firestore path helpers ----
   const rosterCol = ()=> fb.collection(fdb,'roster');
@@ -721,8 +1387,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       c.innerHTML=`${LOCK_SVG}<h2>Not authorized</h2><p>You’re signed in as <span class="who">${escapeHtml(user.email)}</span>, which isn’t on the coach list. Ask a coach to add this email, or sign in with a different account.</p><button class="gate-btn alt" id="gateOut">Sign out</button>`;
       $('#gateOut').onclick=()=>fb.signOut(auth);
     } else {
-      c.innerHTML=`${LOCK_SVG}<h2>Coaches only</h2><p>Sign in with your coach Google account to view attendance and weigh-ins.</p><button class="gate-btn" id="gateIn">Coach sign in</button>`;
+      c.innerHTML=`${LOCK_SVG}<h2>Coaches only</h2><p>Sign in with your coach Google account to view attendance and weigh-ins.</p><button class="gate-btn" id="gateIn">Coach sign in</button><div class="gate-foot">Mat Room v${APP_VERSION}${IS_BETA?' beta':''} · <button class="linkbtn" id="gateHelp">How to install &amp; use</button></div>`;
       $('#gateIn').onclick=openLogin;
+      $('#gateHelp').onclick=()=>openHelp('install');
     }
   }
   // Tear down every listener and wipe data from memory and the page.
@@ -732,7 +1399,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     [unsubRoster, unsubAtt, unsubSettings, unsubNotes].forEach(u=>{ if(u) u(); });
     unsubRoster=unsubAtt=unsubSettings=unsubNotes=null;
     if(unsubWeek){ unsubWeek.forEach(u=>u()); unsubWeek=null; }
-    roster=[]; attendance={}; weekData={}; prevWeights={}; notes={}; hydro={};
+    roster=[]; attendance={}; weekData={}; prevWeights={}; notes={}; hydro={}; luHist={}; luDays={}; luLoaded=false; luLoading=false; luToken++;
     if(profileOpenId) closeProfile();
     hideKioskUI();
     $('#schedScrim').classList.remove('open'); $('#scrim').classList.remove('open');
@@ -765,7 +1432,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     $('#syncText').textContent='Connected';
     unsubRoster = fb.onSnapshot(rosterCol(), snap=>{
       roster = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-      if(view==='day') renderDaily(); else renderWeek();
+      if(view==='day') renderDaily(); else if(view==='week') renderWeek(); else renderLineup();
       if(kioskOn) renderKiosk();
       if(profileOpenId){ const w=roster.find(r=>r.id===profileOpenId); if(w) updateProfileHeader(w); }
     }, err=>{ $('#syncDot').className='dot off'; $('#syncText').textContent='Sync error: '+err.code; });
@@ -773,6 +1440,9 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
       const d=snap.exists()?snap.data():{};
       schedule={ practiceDays:Array.isArray(d.practiceDays)?d.practiceDays:[1,2,3,4,5], seasonStart:d.seasonStart||'', overrides:d.overrides||{} };
       kioskPinHash=d.kioskPinHash||''; renderPinState();
+      schedule.lineupMode = d.lineupMode==='class' ? 'class' : 'weight';
+      schedule.lineupAllowance = validW(d.lineupAllowance) ? d.lineupAllowance : 0;
+      if(view==='lineup') renderLineup();
       if(kioskOn) renderKiosk();
       renderDayTag(); if(view==='week') renderWeek();
       if($('#schedScrim').classList.contains('open')) renderOverrides();
@@ -786,7 +1456,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     unsubNotes = fb.onSnapshot(fb.collection(fdb,'privateNotes'), snap=>{
       notes={}; hydro={};
       snap.docs.forEach(d=>{ const x=d.data(); notes[d.id]=x.notes||{}; if(x.hydration) hydro[d.id]=x.hydration; });
-      patchNotes(); updateDeltas(); if(view==='week') renderWeek();
+      patchNotes(); updateDeltas(); if(view==='week') renderWeek(); if(view==='lineup') renderLineup();
     }, err=>{ banner('Absence reasons can\u2019t load yet. Publish the updated Firestore rules (privateNotes) in the Firebase console.', true); });
   }
   function watchDate(){
@@ -794,7 +1464,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     unsubAtt=null; if(!started) return;
     attendance={};
     unsubAtt = fb.onSnapshot(attCol(selDate), snap=>{
-      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily(); if(kioskOn) renderKiosk();
+      attendance={}; snap.docs.forEach(d=>attendance[d.id]=d.data()); patchDaily(); if(kioskOn) renderKiosk(); if(view==='lineup') renderLineup();
     }, ()=>{});
     loadPrevWeights();
   }
@@ -1035,6 +1705,8 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
     $('#pName').textContent=w.name;
     const bits=[w.wclass ? (w.wclass+' lb weight class') : 'No weight class set'];
     if(w.grade) bits.push('Grade '+w.grade);
+    if(w.lineupRole) bits.push(roleLong(w.lineupRole));
+    if(w.lineupClass) bits.push('locked at '+w.lineupClass);
     $('#pClass').textContent = bits.join(', ');
   }
   function openProfile(wid){
@@ -1525,16 +2197,42 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   function shiftDate(n){ changeDate(addDays(selDate,n)); }
   function setView(v){
     view=v;
-    $('#tabDay').classList.toggle('active',v==='day'); $('#tabWeek').classList.toggle('active',v==='week');
-    $('#dailyView').classList.toggle('hidden',v!=='day'); $('#weekView').classList.toggle('hidden',v!=='week');
+    $('#tabDay').classList.toggle('active',v==='day'); $('#tabWeek').classList.toggle('active',v==='week'); $('#tabLineup').classList.toggle('active',v==='lineup');
+    $('#dailyView').classList.toggle('hidden',v!=='day'); $('#weekView').classList.toggle('hidden',v!=='week'); $('#lineupView').classList.toggle('hidden',v!=='lineup');
     $('#dateNav').style.visibility=v==='day'?'visible':'hidden';
-    if(v==='week'){ watchWeek(); renderWeek(); } else renderDaily();
+    if(v==='week'){ watchWeek(); renderWeek(); }
+    else if(v==='lineup'){ renderLineup(); if(!luLoaded && !luLoading) loadLineupWeights(); }
+    else renderDaily();
   }
 
   // wire UI
   $('#prevDay').onclick=()=>shiftDate(-1); $('#nextDay').onclick=()=>shiftDate(1);
   $('#todayBtn').onclick=()=>changeDate(todayStr()); $('#dateInput').onchange=e=>changeDate(e.target.value);
-  $('#tabDay').onclick=()=>setView('day'); $('#tabWeek').onclick=()=>setView('week');
+  $('#tabDay').onclick=()=>setView('day'); $('#tabWeek').onclick=()=>setView('week'); $('#tabLineup').onclick=()=>setView('lineup');
+  $('#luRefresh').onclick=()=>loadLineupWeights();
+  $('#luExport').onclick=exportLineupCSV;
+  $('#luMode').onchange=()=>{ schedule.lineupMode=$('#luMode').value; renderLineup(); saveSettings({lineupMode:schedule.lineupMode}); };
+  let luAllowT=null;
+  $('#luAllow').oninput=()=>{ const v=parseFloat($('#luAllow').value); schedule.lineupAllowance=isNaN(v)||v<0?0:Math.min(v,15); renderLineup(); clearTimeout(luAllowT); luAllowT=setTimeout(()=>saveSettings({lineupAllowance:schedule.lineupAllowance}),600); };
+  $('#luSave').onclick=saveLineupEdit;
+  $('#luCancel').onclick=()=>{ $('#luScrim').classList.remove('open'); luEditId=null; };
+  $('#luScrim').onclick=e=>{ if(e.target.id==='luScrim'){ $('#luScrim').classList.remove('open'); luEditId=null; } };
+  $('#luProfile').onclick=()=>{ const id=luEditId; $('#luScrim').classList.remove('open'); luEditId=null; if(id) openProfile(id); };
+  // v1.6 lineup wiring
+  $('#luFilter').onchange=()=>{ luFilter=$('#luFilter').value; renderLineup(); };
+  $('#whoReach').oninput=renderWho;
+  $('#whoClose').onclick=()=>$('#luWho').classList.remove('open');
+  $('#luPrint').onclick=()=>openCard(currentCardRows(), 'Projected lineup', todayStr());
+  $('#cardPrint').onclick=()=>window.print();
+  $('#cardClose').onclick=()=>$('#luCard').classList.remove('open');
+  $('#luSaveBtn').onclick=openSaveLineup;
+  $('#svSave').onclick=saveLineupSnapshot;
+  $('#svName').onkeydown=e=>{ if(e.key==='Enter') saveLineupSnapshot(); };
+  $('#svCancel').onclick=()=>$('#luSaveM').classList.remove('open');
+  $('#luSavedBtn').onclick=openSavedList;
+  $('#svListClose').onclick=()=>$('#luList').classList.remove('open');
+  ['luWho','luCard','luSaveM','luList'].forEach(id=>{ const el=document.getElementById(id); el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); }); });
+  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; ['luCard','luSaveM','luList','luWho'].forEach(id=>document.getElementById(id).classList.remove('open')); });
   $('#prevWeek').onclick=()=>{weekStart=addDays(weekStart,-7);watchWeek();renderWeek();};
   $('#nextWeek').onclick=()=>{weekStart=addDays(weekStart,7);watchWeek();renderWeek();};
   $('#thisWeek').onclick=()=>{weekStart=mondayOf(todayStr());watchWeek();renderWeek();};
@@ -1545,6 +2243,19 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   scrim.onclick=e=>{ if(e.target===scrim) scrim.classList.remove('open'); };
   $('#saveAdd').onclick=()=>{ const n=$('#fName').value.trim(); if(!n){$('#fName').focus();return;} addWrestler(n,$('#fClass').value.trim()); scrim.classList.remove('open'); };
   $('#fName').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();}; $('#fClass').onkeydown=e=>{if(e.key==='Enter')$('#saveAdd').click();};
+
+  // v1.5 wiring
+  $('#verLabel').textContent='v'+APP_VERSION+(IS_BETA?' beta':'');
+  $('#betaPill').classList.toggle('hidden', !IS_BETA);
+  if(IS_BETA) document.title='[BETA] '+document.title;
+  $('#refreshBtn').onclick=hardRefresh;
+  $('#updBtn').onclick=hardRefresh;
+  $('#helpBtn').onclick=()=>openHelp();
+  $('#backupBtn').onclick=downloadBackup;
+  $('#helpScrim').onclick=e=>{ if(e.target.id==='helpScrim') closeHelp(); };
+  setTimeout(checkForUpdate, 4000);
+  setInterval(checkForUpdate, 30*60*1000);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') checkForUpdate(); });
 
   // Wrestler Mode wiring
   $('#kioskBtn').onclick=()=>enterKiosk();
@@ -1574,7 +2285,7 @@ function startApp(auth, fdb, fb, coachEmails, weightClasses){
   const pscrim=$('#profileScrim');
   $('#profileClose').onclick=closeProfile;
   pscrim.onclick=e=>{ if(e.target===pscrim) closeProfile(); };
-  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(kioskOn){ if(!$('#pinSheet').classList.contains('hidden')) $('#pinSheet').classList.add('hidden'); else kClose(); return; } if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
+  document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if($('#helpScrim').classList.contains('open')){ closeHelp(); return; } if(kioskOn){ if(!$('#pinSheet').classList.contains('hidden')) $('#pinSheet').classList.add('hidden'); else kClose(); return; } if($('#luScrim').classList.contains('open')){ $('#luScrim').classList.remove('open'); luEditId=null; } else if(sscrim.classList.contains('open')) closeSchedule(); else if(profileOpenId) closeProfile(); });
 
   syncDateInput();
 }
