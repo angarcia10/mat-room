@@ -1,7 +1,7 @@
 {
-  "name": "Mat Room Beta",
-  "short_name": "MR Beta",
-  "description": "Logan wrestling attendance, weigh-ins, and lineup (beta).",
+  "name": "Mat Room",
+  "short_name": "Mat Room",
+  "description": "Logan wrestling attendance and weigh-ins.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

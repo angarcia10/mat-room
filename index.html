@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mat Room — Attendance & Weigh-In</title>
+<!-- Home-screen app: needs manifest.webmanifest, icon-192.png, icon-512.png, apple-touch-icon.png next to this file -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#16202b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mat Room">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -205,6 +214,8 @@
   .tab-actions { margin-left:auto; align-self:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .tab-actions .ghost-btn { padding:7px 13px; }
 
+  .icon-btn { width:34px; padding:0; font-size:17px; line-height:34px; font-family:'Inter',sans-serif; text-transform:none; }
+
   /* ---- Missing weigh-in reminder ---- */
   .weigh.missing { border-color:var(--flag); box-shadow:0 0 0 2px color-mix(in srgb,var(--flag) 22%,transparent); }
   .delta.missing { color:var(--flag); }
@@ -353,6 +364,7 @@
       <div><h1>MAT ROOM</h1><div class="sub">Practice attendance &amp; weigh-in</div></div>
     </div>
     <div class="header-right">
+      <button class="auth-btn icon-btn" id="refreshBtn" title="Refresh to get the latest version" aria-label="Refresh">↻</button>
       <div class="auth-box" id="authBox"></div>
       <div class="date-nav hidden" id="dateNav">
         <button id="prevDay" title="Previous day">‹</button>
@@ -529,6 +541,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Refresh button: load a fresh copy of the page (skips any cached version), then tidy the address bar.
+if(/[?&]r=\d+/.test(location.search)){ try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
+document.getElementById('refreshBtn').onclick=()=>location.replace(location.pathname+'?r='+Date.now()+location.hash);
 
 /* ============================================================
    COACH EMAILS — must match the list in firestore.rules.
